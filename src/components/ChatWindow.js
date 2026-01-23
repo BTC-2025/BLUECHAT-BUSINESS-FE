@@ -8,6 +8,8 @@ import ChatInput from "./ChatInput.js";
 import GroupManageModal from "./GroupManageModal";
 import ContactInfoModal from "./ContactInfoModal"; // ✅ Added ContactInfoModal
 import ForwardModal from "./ForwardModal";
+import TaskModal from "./TaskModal";
+import TaskBubble from "./TaskBubble";
 import { encryptMessage } from "../utils/cryptoUtils";
 import chatWallpaper from "../assets/resized.png";
 
@@ -17,6 +19,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
   const scrollerRef = useRef(null);
   const [openManage, setOpenManage] = useState(false);
   const [openContactInfo, setOpenContactInfo] = useState(false); // ✅ Added state
+  const [openTaskModal, setOpenTaskModal] = useState(false); // ✅ Task Modal State
   const [showMenu, setShowMenu] = useState(false);
   // ✅ Added state
 
@@ -701,6 +704,17 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                         </svg>
                         Delete Chat
                       </button>
+
+                      {/* ✅ Assign Task Button */}
+                      <button
+                        onClick={() => { setShowMenu(false); setOpenTaskModal(true); }}
+                        className="w-full px-4 py-3 text-left text-sm font-medium text-white hover:text-white hover:bg-white/5 transition-colors flex items-center gap-3"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                        </svg>
+                        Assign Task
+                      </button>
                     </div>
                   </>
                 )}
@@ -724,58 +738,66 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       </div>
 
       {/* ✅ Block Status Banners */}
-      {blockError && (
-        <div className="bg-red-900/50 text-red-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
-          {blockError}
-        </div>
-      )}
-      {blockStatus.theyBlockedMe && !blockStatus.iBlockedThem && (
-        <div className="bg-yellow-900/50 text-yellow-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
-          You cannot send messages to this user.
-        </div>
-      )}
-      {blockStatus.iBlockedThem && (
-        <div className="bg-background-dark text-primary/60 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
-          You have blocked this user. Unblock to send messages.
-        </div>
-      )}
+      {
+        blockError && (
+          <div className="bg-red-900/50 text-red-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+            {blockError}
+          </div>
+        )
+      }
+      {
+        blockStatus.theyBlockedMe && !blockStatus.iBlockedThem && (
+          <div className="bg-yellow-900/50 text-yellow-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+            You cannot send messages to this user.
+          </div>
+        )
+      }
+      {
+        blockStatus.iBlockedThem && (
+          <div className="bg-background-dark text-primary/60 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+            You have blocked this user. Unblock to send messages.
+          </div>
+        )
+      }
 
       {/* ✅ Pinned Messages Section */}
-      {messages.filter(m => m.isPinned).length > 0 && (
-        <div className="bg-secondary/10 border-b border-secondary/20 px-3 sm:px-4 py-2">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-secondary-dark text-xs sm:text-sm font-semibold">📌 Pinned Messages</span>
-            <span className="text-primary/60 text-[10px] sm:text-xs">
-              ({messages.filter(m => m.isPinned).length})
-            </span>
-          </div>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {messages.filter(m => m.isPinned).map((m) => (
-              <div
-                key={`pinned-${m._id}`}
-                className="flex items-start justify-between gap-2 bg-white/80 rounded-lg px-3 py-2 shadow-sm"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="text-[10px] text-secondary-dark mb-0.5">
-                    {m.sender?.full_name || (m.sender === user.id ? "You" : "User")}
-                  </div>
-                  <div className="text-xs sm:text-sm text-primary truncate">
-                    {m.body?.substring(0, 100) || "[attachment]"}
-                    {m.body?.length > 100 ? "..." : ""}
-                  </div>
-                </div>
-                <button
-                  onClick={() => socket.emit("message:unpin", { messageId: m._id, chatId: chat.id })}
-                  className="text-[10px] text-primary/40 hover:text-red-500 flex-shrink-0"
-                  title="Unpin"
+      {
+        messages.filter(m => m.isPinned).length > 0 && (
+          <div className="bg-secondary/10 border-b border-secondary/20 px-3 sm:px-4 py-2">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-secondary-dark text-xs sm:text-sm font-semibold">📌 Pinned Messages</span>
+              <span className="text-primary/60 text-[10px] sm:text-xs">
+                ({messages.filter(m => m.isPinned).length})
+              </span>
+            </div>
+            <div className="space-y-2 max-h-32 overflow-y-auto">
+              {messages.filter(m => m.isPinned).map((m) => (
+                <div
+                  key={`pinned-${m._id}`}
+                  className="flex items-start justify-between gap-2 bg-white/80 rounded-lg px-3 py-2 shadow-sm"
                 >
-                  ✕
-                </button>
-              </div>
-            ))}
+                  <div className="min-w-0 flex-1">
+                    <div className="text-[10px] text-secondary-dark mb-0.5">
+                      {m.sender?.full_name || (m.sender === user.id ? "You" : "User")}
+                    </div>
+                    <div className="text-xs sm:text-sm text-primary truncate">
+                      {m.body?.substring(0, 100) || "[attachment]"}
+                      {m.body?.length > 100 ? "..." : ""}
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => socket.emit("message:unpin", { messageId: m._id, chatId: chat.id })}
+                    className="text-[10px] text-primary/40 hover:text-red-500 flex-shrink-0"
+                    title="Unpin"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
       {/* ✅ Messages Area */}
       <div
@@ -805,15 +827,20 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                     </div>
                   </div>
                 )}
-                <MessageBubble
-                  message={m}
-                  mine={m.sender === user.id || m.sender?._id === user.id}
-                  chatId={chat.id}
-                  isGroup={chat.isGroup}
-                  isAdmin={chat.isGroup && chat.admins?.includes(user.id)}
-                  onReply={(msg) => setReplyTo(msg)}
-                  onForward={(msg) => setForwardMessage(msg)}
-                />
+                {/* ✅ Check if it's a TASK message */}
+                {m.task ? (
+                  <TaskBubble message={m} mine={m.sender === user.id} />
+                ) : (
+                  <MessageBubble
+                    message={m}
+                    mine={m.sender === user.id || m.sender?._id === user.id}
+                    chatId={chat.id}
+                    isGroup={chat.isGroup}
+                    isAdmin={chat.isGroup && chat.admins?.includes(user.id)}
+                    onReply={(msg) => setReplyTo(msg)}
+                    onForward={(msg) => setForwardMessage(msg)}
+                  />
+                )}
               </div>
             );
           })}
@@ -866,7 +893,17 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
           onClose={() => setForwardMessage(null)}
         />
       )}
-    </div>
+
+      {/* ✅ Task Modal */}
+      <TaskModal
+        isOpen={openTaskModal}
+        onClose={() => setOpenTaskModal(false)}
+        chat={chat}
+        onTaskCreated={(newTask) => {
+          // Socket handles updates
+        }}
+      />
+    </div >
   );
 }
 
