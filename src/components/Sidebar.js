@@ -12,6 +12,8 @@ import BlockedList from "./BlockedList"; // ✅ Added
 import CallHistory from "./CallHistory"; // ✅ Added
 import BusinessRegistrationModal from "./BusinessRegistrationModal"; // ✅ Business
 // import MyBusinessDashboard from "./MyBusinessDashboard"; // ✅ Business (Handled by Home.jsx view state)
+import CommunityCreateModal from "./CommunityCreateModal"; // ✅ Community
+import CommunityManageModal from "./CommunityManageModal"; // ✅ Community
 import NavRail from "./NavRail";
 import { requestNotificationPermission, unsubscribeFromNotifications } from "../utils/notificationHelper";
 
@@ -22,6 +24,10 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   const [openJoin, setOpenJoin] = useState(false);
   const [openProfile, setOpenProfile] = useState(false);
   const [openBusinessReg, setOpenBusinessReg] = useState(false); // ✅ Business
+  const [openCommunityCreate, setOpenCommunityCreate] = useState(false); // ✅ Community
+  const [openCommunityManage, setOpenCommunityManage] = useState(false); // ✅ Community
+  const [viewingCommunity, setViewingCommunity] = useState(null); // ✅ Community ID when drilling down
+  const [communityDetails, setCommunityDetails] = useState(null); // ✅ Community Data
   const [activeTab, setActiveTab] = useState("chats"); // chats, groups, calls, status, settings
   const [notifSettings, setNotifSettings] = useState(() =>
     JSON.parse(localStorage.getItem("notificationSettings") || '{"sound":true,"push":true}')
@@ -54,6 +60,39 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       console.error("Failed to fetch chats:", err);
     }
   }, [user?.token]);
+
+  // ✅ Community: Load Communities
+  const [communities, setCommunities] = useState([]);
+  const loadCommunities = useCallback(async () => {
+    try {
+      const { data } = await axios.get(`${API_BASE}/communities`, {
+        headers: { Authorization: `Bearer ${user?.token}` }
+      });
+      setCommunities(data);
+    } catch (e) { console.error("Failed to load communities", e); }
+  }, [user?.token]);
+
+  // ✅ Community: Load Specific Community Details
+  const loadCommunityDetails = useCallback(async (communityId) => {
+    try {
+      const { data } = await axios.get(`${API_BASE}/communities/${communityId}`, {
+        headers: { Authorization: `Bearer ${user?.token}` }
+      });
+      setCommunityDetails(data);
+    } catch (e) {
+      console.error("Failed to load community details", e);
+      setViewingCommunity(null); // fallback
+    }
+  }, [user?.token]);
+
+  useEffect(() => {
+    if (activeTab === 'communities' && !viewingCommunity) {
+      loadCommunities();
+    }
+    if (viewingCommunity) {
+      loadCommunityDetails(viewingCommunity);
+    }
+  }, [activeTab, viewingCommunity, loadCommunities, loadCommunityDetails]);
 
   useEffect(() => {
     const fetchChatsOnce = async () => {
@@ -365,6 +404,120 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       return <BlockedList />;
     }
 
+    // ✅ Communities Tab
+    if (activeTab === "communities") {
+      if (viewingCommunity && communityDetails) {
+        // Drill Down View
+        return (
+          <div className="flex-1 flex flex-col h-full">
+            <div className="p-4 border-b border-white/5 flex items-center gap-3">
+              <button onClick={() => { setViewingCommunity(null); setCommunityDetails(null); }} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+              </button>
+              <div className="flex-1">
+                <h2 className="font-bold text-lg leading-tight">{communityDetails.name}</h2>
+                <p className="text-xs text-secondary font-bold uppercase tracking-wide">Community</p>
+              </div>
+              {communityDetails.admins?.includes(user?.id) && (
+                <button onClick={() => setOpenCommunityManage(true)} className="p-2 hover:bg-white/10 rounded-full text-primary transition-colors" title="Manage Community">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                </button>
+              )}
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+              {/* Announcement Group */}
+              {communityDetails.announcementGroup && (
+                <div
+                  onClick={() => onOpenChat(communityDetails.announcementGroup)}
+                  className="flex items-center gap-3 p-3 bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 cursor-pointer transition-all"
+                >
+                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                  </div>
+                  <div>
+                    <div className="font-bold text-white">Announcements</div>
+                    <div className="text-xs text-primary-light">Official Community Updates</div>
+                  </div>
+                </div>
+              )}
+
+              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-4 mb-2 pl-2">Groups</div>
+
+              {communityDetails.groups?.map(group => (
+                <div
+                  key={group.id}
+                  onClick={() => group.isMember ? onOpenChat(group) : alert("You are not a member of this group.")}
+                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${group.isMember ? 'hover:bg-white/5 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
+                >
+                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-white/50">
+                    {group.title?.[0]}
+                  </div>
+                  <div>
+                    <div className="font-bold text-gray-200">{group.title}</div>
+                    <div className="text-xs text-gray-500">
+                      {group.participantsCount} members {group.isMember ? "• Joined" : ""}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {communityDetails.groups?.length === 0 && (
+                <div className="text-center py-8 text-gray-500 text-sm">No groups yet.</div>
+              )}
+            </div>
+          </div>
+        );
+      }
+
+      // List View
+      return (
+        <div className="flex-1 flex flex-col h-full">
+          <div className="px-5 pt-6 pb-2 flex justify-between items-center">
+            <h2 className="text-2xl font-black">Communities</h2>
+            <button onClick={() => setOpenCommunityCreate(true)} className="w-8 h-8 flex items-center justify-center bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors" title="Create Community">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
+            </button>
+          </div>
+
+          <div className="px-5 pb-4">
+            <p className="text-xs text-gray-400">Communities bring members together in topic-based groups.</p>
+          </div>
+
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+            {communities.map(comm => (
+              <div
+                key={comm.id}
+                onClick={() => setViewingCommunity(comm.id)}
+                className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/5"
+              >
+                <div className="relative">
+                  <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
+                    {comm.icon ? <img src={comm.icon} className="w-full h-full object-cover rounded-xl" alt="" /> : <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>}
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <div className="font-bold text-base text-gray-200">{comm.name}</div>
+                  <div className="text-xs text-gray-500 truncate">{comm.description || "No description"}</div>
+                </div>
+                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+              </div>
+            ))}
+
+            {communities.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-10 opacity-50">
+                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                </div>
+                <p className="text-sm font-bold">No communities</p>
+                <p className="text-xs">Create one to get started!</p>
+              </div>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     // Filter online users (only for 1:1 chats)
     const onlineUsers = chats
       .filter(c => !c.isGroup && c.other?.isOnline && !c.isArchived)
@@ -494,6 +647,18 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
         onClose={() => setOpenBusinessReg(false)}
         onSuccess={async () => { setOpenBusinessReg(false); await load(); }}
       />
+      <CommunityCreateModal
+        open={openCommunityCreate}
+        onClose={() => setOpenCommunityCreate(false)}
+        onCreated={() => { loadCommunities(); }}
+      />
+      {viewingCommunity && (
+        <CommunityManageModal
+          open={openCommunityManage}
+          onClose={() => setOpenCommunityManage(false)}
+          communityId={viewingCommunity}
+        />
+      )}
     </div>
   );
 }

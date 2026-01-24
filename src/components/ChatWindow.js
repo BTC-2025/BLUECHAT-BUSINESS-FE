@@ -859,6 +859,10 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                   ? "Unblock this user to send messages"
                   : "You cannot send messages to this user"}
           </div>
+        ) : (chat.isAnnouncementGroup && !chat.admins?.includes(user.id)) ? (
+          <div className="text-center text-primary/50 py-2 text-sm italic bg-gray-50 rounded-lg">
+            Only admins can send messages in this group.
+          </div>
         ) : (
           <ChatInput
             onSend={send}
