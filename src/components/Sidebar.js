@@ -475,7 +475,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
         <div className="flex-1 flex flex-col h-full">
           <div className="px-5 pt-6 pb-2 flex justify-between items-center">
             <h2 className="text-2xl font-black">Communities</h2>
-            <button onClick={() => setOpenCommunityCreate(true)} className="w-8 h-8 flex items-center justify-center bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors" title="Create Community">
+            <button onClick={() => setOpenCommunityCreate(true)} className="w-8 h-8 flex items-center justify-center bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors shadow-lg shadow-secondary/20" title="Create Community">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
             </button>
           </div>
@@ -541,12 +541,12 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                 <>
                   <button
                     onClick={() => setOpenJoin(true)}
-                    className="h-8 px-3 flex items-center justify-center bg-secondary text-primary-dark rounded-lg hover:bg-secondary-dark transition-colors text-xs font-bold"
+                    className="h-8 px-3 flex items-center justify-center bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-xs font-bold ring-1 ring-white/10"
                     title="Join group with code"
                   >
                     Join
                   </button>
-                  <button onClick={() => setOpenCreate(true)} className="w-8 h-8 flex items-center justify-center bg-primary/20 text-primary rounded-lg hover:bg-primary/30 transition-colors" title="Create new group">
+                  <button onClick={() => setOpenCreate(true)} className="w-8 h-8 flex items-center justify-center bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors shadow-lg shadow-secondary/20" title="Create new group">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
                   </button>
                 </>

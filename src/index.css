@@ -2,10 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #root {
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden; /* Prevent body scroll, handle in components */
+:root {
+  --premium-glass: rgba(255, 255, 255, 0.08);
+  --premium-glass-border: rgba(255, 255, 255, 0.12);
+  --premium-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --sapphire: #0f172a;
+  --emerald-accent: #10b981;
+}
+
+body {
+  background: #000;
+  color: white;
+  @apply font-sans antialiased;
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  background: var(--premium-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--premium-glass-border);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Premium Animations */
+@keyframes premium-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes sapphire-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(29, 78, 216, 0.2); }
+  50% { box-shadow: 0 0 25px rgba(29, 78, 216, 0.4); }
+}
+
+.animate-premium-in {
+  animation: premium-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hover-sapphire:hover {
+  animation: sapphire-glow 2s infinite ease-in-out;
+}
+
+/* Custom Scrollbar for Premium Look */
+::-webkit-scrollbar {
+  width: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Premium shadows */
+.shadow-bubble {
+  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+.shadow-card {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }

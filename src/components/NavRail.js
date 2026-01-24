@@ -7,14 +7,11 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
 
     const tabs = [
         { id: 'chats', icon: '💬', label: 'Chats' },
-        { id: 'favorites', icon: '⭐️', label: 'Favorites' }, // ✅ Added
-        { id: 'communities', icon: '👨‍👩‍👧‍👦', label: 'Communities' }, // ✅ Added
+        { id: 'communities', icon: '👨‍👩‍👧‍👦', label: 'Communities' },
         { id: 'groups', icon: '👥', label: 'Groups' },
-        { id: 'archived', icon: '📥', label: 'Archived' },
-        ...(user?.isBusiness ? [{ id: 'my-business', icon: '🏢', label: 'My Business' }] : []), // ✅ Business
+        ...(user?.isBusiness ? [{ id: 'my-business', icon: '🏢', label: 'My Business' }] : []),
         { id: 'calls', icon: '📞', label: 'Calls' },
         { id: 'status', icon: '🕒', label: 'Status' },
-        { id: 'blocked', icon: '🚫', label: 'Blocked' }, // ✅ Added
         { id: 'settings', icon: '⚙️', label: 'Settings' },
     ];
 
@@ -29,13 +26,10 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
             fixed bottom-0 md:relative
             border-t md:border-t-0 border-white/10
         ">
-            {/* Logo - Hidden on mobile bottom bar */}
-            <div className="hidden md:block w-10 h-10 bg-white rounded-xl overflow-hidden shadow-lg shadow-black/10 ring-1 ring-black/5">
-                <img src={logo} alt="Logo" className="w-full h-full object-cover" />
-            </div>
+            {/* Logo Removed */}
 
             {/* Navigation Icons */}
-            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-5 w-full">
+            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-6 w-full pt-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
