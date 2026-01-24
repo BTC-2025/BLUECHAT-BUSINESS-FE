@@ -1,18 +1,21 @@
 import { useState } from "react";
 import { api } from "../api";
+import { useAuth } from "../context/AuthContext";
 
 export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
+    const { user } = useAuth();
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [assignAll, setAssignAll] = useState(true);
     const [selectedAssignees, setSelectedAssignees] = useState([]);
+    const [isPrivate, setIsPrivate] = useState(false);
     const [loading, setLoading] = useState(false);
 
     if (!isOpen) return null;
 
     // Determine selectable users
     const assignableUsers = chat.isGroup
-        ? chat.participantsDetails?.filter(u => u.id !== chat.currentUserId) || [] // Assuming we have details
+        ? (chat.members || chat.participantsDetails || []).filter(u => (u.id || u._id) !== user.id)
         : [chat.other];
 
     const handleSubmit = async (e) => {
@@ -28,7 +31,8 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                 title,
                 description,
                 chatId: chat.id,
-                assigneeIds
+                assigneeIds,
+                isPrivate
             });
 
             onTaskCreated?.(data.task);
@@ -129,6 +133,29 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                         </div>
                     )}
 
+
+
+                    {/* Private Task Toggle (Only for Groups, when not assigning to all - logic adjustable) */}
+                    {chat.isGroup && (
+                        <div className="flex items-center gap-2 mt-4 p-2 rounded-lg hover:bg-white/5 transition-colors">
+                            <input
+                                type="checkbox"
+                                id="privateDetails"
+                                checked={isPrivate}
+                                onChange={(e) => setIsPrivate(e.target.checked)}
+                                className="accent-primary w-4 h-4 rounded cursor-pointer"
+                            />
+                            <div className="flex flex-col">
+                                <label htmlFor="privateDetails" className="text-sm font-medium text-white cursor-pointer selection:bg-none">
+                                    Private Task
+                                </label>
+                                <span className="text-[10px] text-white/50">
+                                    Only assigned members + you can see this task
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="pt-2">
                         <button
                             type="submit"
@@ -148,7 +175,7 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                         </button>
                     </div>
                 </form>
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }

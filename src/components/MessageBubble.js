@@ -192,7 +192,7 @@ import { decryptMessage } from "../utils/cryptoUtils";
 const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 
 export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply, onForward }) {
-  const { privateKey } = useAuth();
+  const { user, privateKey } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
   const [lightboxImage, setLightboxImage] = useState(null);
   const [decryptedBody, setDecryptedBody] = useState(null);
@@ -291,13 +291,57 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
     );
   }
 
+  // ✅ Check if mentioned
+  const isMentioned = (() => {
+    if (!message.body || mine) return false;
+    const text = decryptedBody || message.body;
+    if (!text) return false;
+
+    // Check against user name and phone
+    const name = user?.full_name?.split(" ")[0];
+    const phone = user?.phone;
+
+    // Regex for @Name or @Phone
+    if (name && new RegExp(`@${name}`, "i").test(text)) return true;
+    if (phone && new RegExp(`@${phone}`).test(text)) return true;
+
+    return false;
+  })();
+
+  const renderText = () => {
+    const text = decryptedBody || message.body;
+    if (!text) return null;
+
+    const parts = text.split(/(@[a-zA-Z0-9]+)(?=\s|$|\W)/g);
+
+    return parts.map((part, i) => {
+      if (part.startsWith("@")) {
+        const mentionTarget = part.substring(1);
+        const isMe = (user?.full_name && user.full_name.toLowerCase().includes(mentionTarget.toLowerCase())) ||
+          (user?.phone && user.phone.includes(mentionTarget));
+
+        return (
+          <span
+            key={i}
+            className={`font-bold ${isMe ? "bg-yellow-500/40 text-white px-1 rounded" : (mine ? "text-secondary" : "text-primary-light")}`}
+          >
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       {/* ✅ Chat Bubble with modern styling - fits content */}
       <div
         className={`relative inline-block rounded-2xl px-4 py-2.5 animate-fade-in max-w-[75%] ${mine
           ? "bg-gradient-to-br from-primary to-primary-light text-white rounded-br-md shadow-bubble"
-          : "bg-white text-primary rounded-bl-md shadow-card border border-background-dark/50"
+          : isMentioned
+            ? "bg-yellow-500/10 border-2 border-yellow-500/50 text-white rounded-bl-md shadow-[0_0_15px_rgba(234,179,8,0.3)]"
+            : "bg-white text-primary rounded-bl-md shadow-card border border-background-dark/50"
           }`}
       >
         {/* ⋮ Menu - inside the bubble */}
@@ -529,31 +573,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
           </div>
         ) : (message.body || decryptedBody) ? (
           <div className="whitespace-pre-wrap text-sm sm:text-base break-words leading-relaxed">
-            {(() => {
-              const text = decryptedBody || message.body;
-              if (!text) return null;
-
-              // Mention highlighting regex: @ followed by non-space characters
-              // Since we inject names like "@John Doe ", they might have spaces.
-              // We'll use a simpler approach: match @ followed by any word chars or spaces until another @ or end
-              // Better: match against actual group members if we had them, OR use a regex that handles names.
-              // Let's use a regex that matches @Name until a space or next mention.
-              const parts = text.split(/(@[a-zA-Z0-9\s]+?)(?=\s@|$|\s\W|\s\n)/g);
-
-              return parts.map((part, i) => {
-                if (part.startsWith("@")) {
-                  return (
-                    <span
-                      key={i}
-                      className={`font-black ${mine ? "text-secondary" : "text-primary-light"}`}
-                    >
-                      {part}
-                    </span>
-                  );
-                }
-                return part;
-              });
-            })()}
+            {renderText()}
             {decryptionFailed && <span className="text-red-400 block text-xs mt-1">(Decryption failed)</span>}
           </div>
         ) : null}
