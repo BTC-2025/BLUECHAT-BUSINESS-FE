@@ -251,7 +251,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   };
 
   const filteredChats = chats.filter(c => {
-    if (activeTab === "groups") return c.isGroup && !c.isArchived;
+    if (activeTab === "groups") return c.isGroup && !c.isArchived && !c.isAnnouncementGroup;
     if (activeTab === "favorites") return !c.isGroup && c.other?.isFavorite && !c.isArchived;
     if (activeTab === "chats") return !c.isGroup && !c.isArchived;
     if (activeTab === "archived") return c.isArchived;
@@ -409,62 +409,102 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       if (viewingCommunity && communityDetails) {
         // Drill Down View
         return (
-          <div className="flex-1 flex flex-col h-full">
-            <div className="p-4 border-b border-white/5 flex items-center gap-3">
-              <button onClick={() => { setViewingCommunity(null); setCommunityDetails(null); }} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+          <div className="flex-1 flex flex-col h-full bg-[#040712]">
+            {/* Header */}
+            <div className="p-4 border-b border-white/5 flex items-center gap-4 sticky top-0 bg-[#040712]/80 backdrop-blur-md z-10 animate-fade-in">
+              <button
+                onClick={() => { setViewingCommunity(null); setCommunityDetails(null); }}
+                className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-xl transition-all hover:scale-105 active:scale-95 text-white/70 hover:text-white"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
               </button>
-              <div className="flex-1">
-                <h2 className="font-bold text-lg leading-tight">{communityDetails.name}</h2>
-                <p className="text-xs text-secondary font-bold uppercase tracking-wide">Community</p>
+              <div className="flex-1 min-w-0">
+                <h2 className="font-black text-xl leading-tight truncate text-white tracking-tight">{communityDetails.name}</h2>
+                <p className="text-[10px] text-secondary font-bold uppercase tracking-widest mt-0.5">Community</p>
               </div>
               {communityDetails.admins?.includes(user?.id) && (
-                <button onClick={() => setOpenCommunityManage(true)} className="p-2 hover:bg-white/10 rounded-full text-primary transition-colors" title="Manage Community">
+                <button
+                  onClick={() => setOpenCommunityManage(true)}
+                  className="w-10 h-10 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-all hover:scale-105 active:scale-95"
+                  title="Manage Community"
+                >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
                 </button>
               )}
             </div>
 
-            <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
-              {/* Announcement Group */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-3">
+              {/* Announcement Group Card */}
               {communityDetails.announcementGroup && (
                 <div
                   onClick={() => onOpenChat(communityDetails.announcementGroup)}
-                  className="flex items-center gap-3 p-3 bg-primary/10 border border-primary/20 rounded-xl hover:bg-primary/20 cursor-pointer transition-all"
+                  className="relative group p-4 rounded-2xl cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border border-white/5 hover:border-primary/30"
                 >
-                  <div className="w-10 h-10 bg-primary/20 rounded-lg flex items-center justify-center text-primary">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
-                  </div>
-                  <div>
-                    <div className="font-bold text-white">Announcements</div>
-                    <div className="text-xs text-primary-light">Official Community Updates</div>
-                  </div>
-                </div>
-              )}
+                  {/* Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] to-[#1e293b] z-0" />
+                  <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors z-0" />
 
-              <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mt-4 mb-2 pl-2">Groups</div>
-
-              {communityDetails.groups?.map(group => (
-                <div
-                  key={group.id}
-                  onClick={() => group.isMember ? onOpenChat(group) : alert("You are not a member of this group.")}
-                  className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${group.isMember ? 'hover:bg-white/5 cursor-pointer' : 'opacity-50 cursor-not-allowed'}`}
-                >
-                  <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-white/50">
-                    {group.title?.[0]}
+                  {/* Icon & Glitter */}
+                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                    <svg className="w-24 h-24 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                   </div>
-                  <div>
-                    <div className="font-bold text-gray-200">{group.title}</div>
-                    <div className="text-xs text-gray-500">
-                      {group.participantsCount} members {group.isMember ? "• Joined" : ""}
+
+                  <div className="relative z-10 flex items-center gap-4">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 overflow-hidden transform group-hover:rotate-6 transition-transform">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                     </div>
+                    <div className="flex-1">
+                      <div className="font-black text-lg text-white group-hover:text-primary-light transition-colors">Announcements</div>
+                      <div className="text-xs font-medium text-white/50 group-hover:text-white/70 transition-colors">Official Community Updates</div>
+                    </div>
+                    <svg className="w-5 h-5 text-white/20 group-hover:text-primary-light transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
                   </div>
                 </div>
-              ))}
-
-              {communityDetails.groups?.length === 0 && (
-                <div className="text-center py-8 text-gray-500 text-sm">No groups yet.</div>
               )}
+
+              <div className="flex items-center justify-between mt-6 mb-3 px-1">
+                <div className="text-xs font-bold text-white/40 uppercase tracking-widest">Groups</div>
+                <div className="text-[10px] font-bold bg-white/5 text-white/40 px-2 py-0.5 rounded-full">{communityDetails.groups?.length || 0}</div>
+              </div>
+
+              <div className="space-y-1">
+                {communityDetails.groups?.map(group => (
+                  <div
+                    key={group.id}
+                    onClick={() => group.isMember ? onOpenChat(group) : alert("You are not a member of this group.")}
+                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all border border-transparent ${group.isMember
+                        ? 'hover:bg-white/5 hover:border-white/5 cursor-pointer group active:scale-[0.99]'
+                        : 'opacity-50 grayscale cursor-not-allowed'
+                      }`}
+                  >
+                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl flex items-center justify-center font-bold text-white border border-white/5 group-hover:border-white/10 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all">
+                      {group.title?.[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-gray-200 group-hover:text-white truncate transition-colors">{group.title}</div>
+                      <div className="text-xs text-gray-500 group-hover:text-gray-400 flex items-center gap-1.5">
+                        <span>{group.participantsCount} members</span>
+                        {group.isMember && (
+                          <>
+                            <span className="w-1 h-1 rounded-full bg-emerald-500/50"></span>
+                            <span className="text-emerald-500 font-medium">Joined</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    {group.isMember && (
+                      <svg className="w-5 h-5 text-white/10 group-hover:text-white/30 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                    )}
+                  </div>
+                ))}
+
+                {communityDetails.groups?.length === 0 && (
+                  <div className="flex flex-col items-center justify-center py-10 opacity-40">
+                    <svg className="w-12 h-12 mb-3 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
+                    <div className="text-sm font-medium">No groups yet</div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         );
