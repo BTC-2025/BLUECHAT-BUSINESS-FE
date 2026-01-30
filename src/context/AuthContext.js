@@ -70,7 +70,12 @@ export default function AuthProvider({ children }) {
     }, []);
 
     const login = async (phone, password) => {
-        const { data } = await api.post("/auth/login", { phone, password });
+        const { data } = await api.post("/auth/login", {
+            phone,
+            password,
+            appName: localStorage.getItem('appName') || "Business Client",
+            appOrigin: localStorage.getItem('appOrigin') || "business-client"
+        });
         setAuth(data.token);
         setUser(data);
         localStorage.setItem("auth_user", JSON.stringify(data));
@@ -99,7 +104,9 @@ export default function AuthProvider({ children }) {
             full_name,
             password,
             avatar,
-            publicKey: pubKeyB64
+            publicKey: pubKeyB64,
+            appName: localStorage.getItem('appName') || "Business Client",
+            appOrigin: localStorage.getItem('appOrigin') || "business-client"
         });
 
         // 3. Save Private Key locally

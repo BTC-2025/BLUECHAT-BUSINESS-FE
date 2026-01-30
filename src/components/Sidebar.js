@@ -33,6 +33,26 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
     JSON.parse(localStorage.getItem("notificationSettings") || '{"sound":true,"push":true}')
   );
 
+  // ✅ Social Tab State
+  const [socialView, setSocialView] = useState('apps'); // 'apps' | 'contacts'
+  const [selectedApp, setSelectedApp] = useState(null); // { id: 'ecommerce', name: '...' }
+  const [connectedApps, setConnectedApps] = useState([]);
+
+  // ✅ Fetch Connected Apps
+  useEffect(() => {
+    const fetchApps = async () => {
+      try {
+        const { data } = await axios.get(`${API_BASE}/integration/apps`, {
+          headers: { Authorization: `Bearer ${user.token}` }
+        });
+        if (data.success) {
+          setConnectedApps(data.apps);
+        }
+      } catch (e) { console.error("Failed to fetch connected apps", e); }
+    };
+    fetchApps();
+  }, []);
+
   const toggleSetting = async (key) => {
     const newVal = !notifSettings[key];
     const newSettings = { ...notifSettings, [key]: newVal };
@@ -253,7 +273,14 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   const filteredChats = chats.filter(c => {
     if (activeTab === "groups") return c.isGroup && !c.isArchived && !c.isAnnouncementGroup;
     if (activeTab === "favorites") return !c.isGroup && c.other?.isFavorite && !c.isArchived;
-    if (activeTab === "chats") return !c.isGroup && !c.isArchived;
+    // ✅ Social Tab: In 'contacts' view, filter by selected app
+    if (activeTab === "social") {
+      if (socialView === 'contacts' && selectedApp) {
+        return c.origin === selectedApp.chatOriginId && !c.isArchived;
+      }
+      return false; // In 'apps' view, we don't show chats directly
+    }
+    if (activeTab === "chats") return !c.isGroup && !c.isArchived && c.origin !== 'ecommerce'; // ✅ Exclude Social
     if (activeTab === "archived") return c.isArchived;
     return true; // fallback for others
   });
@@ -311,6 +338,39 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                 <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
               </button>
             )}
+
+            {/* ✅ App Settings for Connections */}
+            <div className="p-4 bg-white/5 rounded-2xl space-y-4 border border-white/5">
+              <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider">App Connection</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">App Name</label>
+                  <input
+                    type="text"
+                    placeholder="Business Client"
+                    value={localStorage.getItem('appName') || 'Business Client'}
+                    onChange={(e) => {
+                      localStorage.setItem('appName', e.target.value);
+                      window.location.reload();
+                    }}
+                    className="w-full bg-[#0f172a] px-3 py-2 rounded-lg border border-white/10 text-white text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 mb-1">Origin ID</label>
+                  <input
+                    type="text"
+                    placeholder="business-client"
+                    value={localStorage.getItem('appOrigin') || 'business-client'}
+                    onChange={(e) => {
+                      localStorage.setItem('appOrigin', e.target.value);
+                      window.location.reload();
+                    }}
+                    className="w-full bg-[#0f172a] px-3 py-2 rounded-lg border border-white/10 text-white text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+            </div>
 
             <div className="p-4 bg-white/5 rounded-2xl space-y-4">
               <div className="flex items-center justify-between">
@@ -473,8 +533,8 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                     key={group.id}
                     onClick={() => group.isMember ? onOpenChat(group) : alert("You are not a member of this group.")}
                     className={`flex items-center gap-4 p-3 rounded-2xl transition-all border border-transparent ${group.isMember
-                        ? 'hover:bg-white/5 hover:border-white/5 cursor-pointer group active:scale-[0.99]'
-                        : 'opacity-50 grayscale cursor-not-allowed'
+                      ? 'hover:bg-white/5 hover:border-white/5 cursor-pointer group active:scale-[0.99]'
+                      : 'opacity-50 grayscale cursor-not-allowed'
                       }`}
                   >
                     <div className="w-10 h-10 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl flex items-center justify-center font-bold text-white border border-white/5 group-hover:border-white/10 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all">
@@ -567,6 +627,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       if (activeTab === 'groups') return 'Groups';
       if (activeTab === 'favorites') return 'Favorites';
       if (activeTab === 'archived') return 'Archived';
+      if (activeTab === 'social') return 'Social';
       return 'Chats';
     };
 
@@ -575,7 +636,18 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
         {/* Header Area */}
         <div className="px-5 pt-6 pb-2">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-2xl font-black">{getTitle()}</h2>
+            <div className="flex items-center gap-2">
+              {/* ✅ Back Button for Social Contacts View */}
+              {activeTab === 'social' && socialView === 'contacts' && (
+                <button
+                  onClick={() => { setSocialView('apps'); setSelectedApp(null); }}
+                  className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-all"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
+                </button>
+              )}
+              <h2 className="text-2xl font-black">{activeTab === 'social' ? (socialView === 'contacts' ? selectedApp?.name : 'Social Apps') : getTitle()}</h2>
+            </div>
             <div className="flex gap-2">
               {activeTab === 'groups' && (
                 <>
@@ -625,35 +697,63 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
 
         {/* List Container */}
         <div className="flex-1 overflow-y-auto custom-scrollbar pt-2">
-          {/* {activeTab === "chats" && (
-            <div className="px-3 mb-2 flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-white tracking-tight">
-                Sort by <span className="text-pri">Newest</span>
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
-              </div>
+          {/* ✅ Social App List View */}
+          {activeTab === 'social' && socialView === 'apps' ? (
+            <div className="px-3 space-y-2">
+              {connectedApps.map(app => {
+                // Count unread for this app
+                const unread = chats.filter(c => c.origin === app.chatOriginId).reduce((acc, c) => acc + (c.unread || 0), 0);
+
+                return (
+                  <div
+                    key={app._id}
+                    onClick={() => { setSelectedApp(app); setSocialView('contacts'); }}
+                    className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/5 group"
+                  >
+                    <div className="relative">
+                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-white border border-white/5 overflow-hidden">
+                        {app.icon ? <img src={app.icon} className="w-full h-full object-cover" alt="" /> : (
+                          <svg className="w-6 h-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                        )}
+                      </div>
+                      {unread > 0 && <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 h-4 flex items-center justify-center rounded-full border border-[#040712]">{unread}</span>}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-bold text-base text-gray-200 group-hover:text-white transition-colors">{app.name}</div>
+                      <div className="text-xs text-gray-500">Connected App</div>
+                    </div>
+                    <svg className="w-5 h-5 text-gray-700 group-hover:text-white/30 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                  </div>
+                );
+              })}
+              {connectedApps.length === 0 && (
+                <div className="flex flex-col items-center justify-center py-10 opacity-40">
+                  <div className="text-sm">No connected apps</div>
+                </div>
+              )}
             </div>
-          )} */}
-          <ChatList
-            items={sortChats(displayChats, user?.id)}
-            activeId={activeChatId}
-            userId={user?.id}
-            onOpen={async (chat) => {
-              if (chat.isSynthetic) {
-                // "Me" shortcut clicked, open/create real chat
-                try {
-                  const { data } = await axios.post(`${API_BASE}/chats/open`,
-                    { targetPhone: user.phone },
-                    { headers: { Authorization: `Bearer ${user.token}` } }
-                  );
-                  onOpenChat(data);
-                  await load(); // Refresh to replace synthetic with real
-                } catch (e) { console.error("Self-chat init failed", e); }
-                return;
-              }
-              onOpenChat(chat);
-              setChats((prev) => prev.map((c) => (c.id === chat.id ? { ...c, unread: 0 } : c)));
-            }}
-          />
+          ) : (
+            <ChatList
+              items={sortChats(displayChats, user?.id)}
+              activeId={activeChatId}
+              userId={user?.id}
+              onOpen={async (chat) => {
+                if (chat.isSynthetic) {
+                  try {
+                    const { data } = await axios.post(`${API_BASE}/chats/open`,
+                      { targetPhone: user.phone },
+                      { headers: { Authorization: `Bearer ${user.token}` } }
+                    );
+                    onOpenChat(data);
+                    await load();
+                  } catch (e) { console.error("Self-chat init failed", e); }
+                  return;
+                }
+                onOpenChat(chat);
+                setChats((prev) => prev.map((c) => (c.id === chat.id ? { ...c, unread: 0 } : c)));
+              }}
+            />
+          )}
         </div>
       </div>
     );
