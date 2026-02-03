@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { API_BASE } from '../api';
 
@@ -8,19 +8,7 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        if (open) {
-            console.log('ContactInfoModal Open:', { contact, isBusiness: contact?.isBusiness });
-        }
-        if (open && contact?.isBusiness) {
-            loadBusinessData();
-        } else {
-            // Reset for non-business or closure
-            setBusiness(null);
-            setProducts([]);
-            setActiveTab('info');
-        }
-    }, [open, contact, loadBusinessData]);
+
 
     const loadBusinessData = useCallback(async () => {
         setLoading(true);
@@ -38,6 +26,20 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
             setLoading(false);
         }
     }, [contact]);
+
+    useEffect(() => {
+        if (open) {
+            console.log('ContactInfoModal Open:', { contact, isBusiness: contact?.isBusiness });
+        }
+        if (open && contact?.isBusiness) {
+            loadBusinessData();
+        } else {
+            // Reset for non-business or closure
+            setBusiness(null);
+            setProducts([]);
+            setActiveTab('info');
+        }
+    }, [open, contact, loadBusinessData]);
 
     if (!open || !contact) return null;
 

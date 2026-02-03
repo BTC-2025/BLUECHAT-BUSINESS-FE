@@ -4,6 +4,14 @@ import { API_BASE } from '../api';
 import { useAuth } from '../context/AuthContext';
 import { Trash2, Plus, LogOut } from 'lucide-react';
 
+const PRESET_GREETINGS = [
+    "Hello! How can we help you today?",
+    "Welcome! We're here to assist you with anything you need.",
+    "Hi there! Check out our latest products while we get back to you.",
+    "Thanks for reaching out! Someone will be with you shortly.",
+    "Greetings! We appreciate your interest in our business."
+];
+
 export default function DashboardContent({ onBack }) {
     const { user, logout } = useAuth();
     const [business, setBusiness] = useState(null);
@@ -25,17 +33,9 @@ export default function DashboardContent({ onBack }) {
     const [selectedGreeting, setSelectedGreeting] = useState('');
     const [isSavingGreeting, setIsSavingGreeting] = useState(false);
 
-    const PRESET_GREETINGS = [
-        "Hello! How can we help you today?",
-        "Welcome! We're here to assist you with anything you need.",
-        "Hi there! Check out our latest products while we get back to you.",
-        "Thanks for reaching out! Someone will be with you shortly.",
-        "Greetings! We appreciate your interest in our business."
-    ];
 
-    useEffect(() => {
-        loadData();
-    }, [loadData]);
+
+
 
     const loadData = useCallback(async () => {
         try {
@@ -62,6 +62,10 @@ export default function DashboardContent({ onBack }) {
             setLoading(false);
         }
     }, [user?.token]);
+
+    useEffect(() => {
+        loadData();
+    }, [loadData]);
 
     const handleAddProduct = async (e) => {
         e.preventDefault();
