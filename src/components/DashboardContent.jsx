@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { API_BASE } from '../api';
 import { useAuth } from '../context/AuthContext';
@@ -35,9 +35,9 @@ export default function DashboardContent({ onBack }) {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [loadData]);
 
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
             const [businessRes, productsRes] = await Promise.all([
                 axios.get(`${API_BASE}/business/my-business`, {
@@ -61,7 +61,7 @@ export default function DashboardContent({ onBack }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [user?.token]);
 
     const handleAddProduct = async (e) => {
         e.preventDefault();

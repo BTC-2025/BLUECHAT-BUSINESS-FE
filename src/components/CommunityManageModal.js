@@ -23,9 +23,9 @@ export default function CommunityManageModal({ open, onClose, communityId }) {
             fetchCommunity();
             fetchMyGroups();
         }
-    }, [open, communityId]);
+    }, [open, communityId, fetchCommunity, fetchMyGroups]);
 
-    const fetchMyGroups = async () => {
+    const fetchMyGroups = useCallback(async () => {
         try {
             const { data } = await axios.get(`${API_BASE}/communities/my-groups`, {
                 headers: { Authorization: `Bearer ${user.token}` }
@@ -34,9 +34,9 @@ export default function CommunityManageModal({ open, onClose, communityId }) {
         } catch (err) {
             console.error("Failed to fetch my groups:", err);
         }
-    };
+    }, [user.token]);
 
-    const fetchCommunity = async () => {
+    const fetchCommunity = useCallback(async () => {
         setLoading(true);
         try {
             const { data } = await axios.get(`${API_BASE}/communities/${communityId}`, {
@@ -48,7 +48,7 @@ export default function CommunityManageModal({ open, onClose, communityId }) {
         } finally {
             setLoading(false);
         }
-    };
+    }, [communityId, user.token]);
 
     const handleAddMember = async (e) => {
         e.preventDefault();

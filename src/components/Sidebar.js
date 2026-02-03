@@ -51,7 +51,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       } catch (e) { console.error("Failed to fetch connected apps", e); }
     };
     fetchApps();
-  }, []);
+  }, [user.token]);
 
   const toggleSetting = async (key) => {
     const newVal = !notifSettings[key];

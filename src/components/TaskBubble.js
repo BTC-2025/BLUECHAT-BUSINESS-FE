@@ -6,7 +6,6 @@ import { socket } from "../socket";
 export default function TaskBubble({ message, mine }) {
     const { user } = useAuth();
     const [task, setTask] = useState(message.task || null); // Ideally populated
-    const [loading, setLoading] = useState(false);
     const [reasonModal, setReasonModal] = useState({ open: false, status: "", reason: "" });
 
     // If task provided is just ID or partial, we might need to fetch it (or rely on message population)
@@ -39,7 +38,6 @@ export default function TaskBubble({ message, mine }) {
     const isAssignedByMe = (task.assignedBy?._id || task.assignedBy) === user.id;
 
     const handleStatusUpdate = async (status, reason = "") => {
-        setLoading(true);
         try {
             await api.put(`/tasks/${task._id}/status`, { status, reason });
             // Optimistic update
@@ -52,8 +50,6 @@ export default function TaskBubble({ message, mine }) {
             setReasonModal({ open: false, status: "", reason: "" });
         } catch (err) {
             console.error("Failed to update task", err);
-        } finally {
-            setLoading(false);
         }
     };
 

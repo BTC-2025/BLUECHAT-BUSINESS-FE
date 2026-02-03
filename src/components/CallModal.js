@@ -43,6 +43,13 @@ export default function CallModal({ callState, onClose, userId }) {
         setIsCameraOff(false);
     }, []);
 
+    // End call
+    const handleEndCall = useCallback(() => {
+        socket.emit("call:end", { targetUserId: isIncoming ? callerId : targetUserId });
+        cleanup();
+        onClose();
+    }, [cleanup, onClose, isIncoming, callerId, targetUserId]);
+
     // Initialize media and peer connection
     const initializeCall = useCallback(async (isInitiator) => {
         try {
@@ -110,7 +117,7 @@ export default function CallModal({ callState, onClose, userId }) {
             alert("Could not access camera/microphone. Please check permissions.");
             handleEndCall();
         }
-    }, [callType, isIncoming, callerId, targetUserId]);
+    }, [callType, isIncoming, callerId, targetUserId, handleEndCall]);
 
     // Handle outgoing call initiation
     useEffect(() => {
@@ -205,12 +212,7 @@ export default function CallModal({ callState, onClose, userId }) {
         onClose();
     };
 
-    // End call
-    const handleEndCall = () => {
-        socket.emit("call:end", { targetUserId: isIncoming ? callerId : targetUserId });
-        cleanup();
-        onClose();
-    };
+
 
     // Toggle mute
     const toggleMute = () => {

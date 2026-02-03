@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import logo from '../assets/Blue-Chat.jpeg';
+
 
 export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
     const { user } = useAuth();

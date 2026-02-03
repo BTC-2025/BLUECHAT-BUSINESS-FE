@@ -20,9 +20,9 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
             setProducts([]);
             setActiveTab('info');
         }
-    }, [open, contact]);
+    }, [open, contact, loadBusinessData]);
 
-    const loadBusinessData = async () => {
+    const loadBusinessData = useCallback(async () => {
         setLoading(true);
         try {
             const [businessRes, productsRes] = await Promise.all([
@@ -37,7 +37,7 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
         } finally {
             setLoading(false);
         }
-    };
+    }, [contact]);
 
     if (!open || !contact) return null;
 

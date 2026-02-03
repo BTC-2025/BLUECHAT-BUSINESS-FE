@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { api, setAuth } from "../api";
-import { socket } from "../socket";
 import { generateKeyPair, exportKey } from "../utils/cryptoUtils";
 
 const AuthCtx = createContext(null);
