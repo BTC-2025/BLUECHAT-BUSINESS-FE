@@ -11,7 +11,6 @@ import ForwardModal from "./ForwardModal";
 import TaskModal from "./TaskModal";
 import TaskBubble from "./TaskBubble";
 import { encryptMessage } from "../utils/cryptoUtils";
-import chatWallpaper from "../assets/resized.png";
 
 export default function ChatWindow({ chat, onBack, onStartCall }) {
   const { user } = useAuth();
