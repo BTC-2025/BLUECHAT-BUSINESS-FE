@@ -441,10 +441,10 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-b from-background to-background-dark">
+    <div className="flex flex-col h-full bg-white/70 backdrop-blur-3xl rounded-3xl shadow-float border border-white/60 relative overflow-hidden z-10 m-0 md:m-0">
 
-      {/* ✅ HEADER with gradient and shadow */}
-      <div className="px-4 sm:px-5 py-3.5 bg-gradient-to-r from-primary to-primary-light shadow-header flex justify-between items-center gap-3 min-h-[64px]">
+      {/* ✅ HEADER with glassmorphism */}
+      <div className="px-5 py-4 bg-white/40 backdrop-blur-md border-b border-white/40 shadow-sm flex justify-between items-center gap-3 min-h-[72px] transition-all z-20">
         {showSearch ? (
           <div className="flex-1 flex items-center gap-3 animate-premium-in">
             <div className="relative flex-1">
@@ -454,7 +454,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                 placeholder="Search messages..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 text-white placeholder-white/50 px-10 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-white/30"
+                className="w-full glass-input border-white/40 text-slate-800 placeholder-slate-400 px-10 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-inner"
               />
               <svg className="w-4 h-4 text-white/50 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -462,7 +462,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
             </div>
             <button
               onClick={() => { setShowSearch(false); setSearchQuery(""); }}
-              className="text-white/70 hover:text-white text-sm font-bold px-2"
+              className="text-slate-500 hover:text-slate-800 text-sm font-bold px-2"
             >
               Cancel
             </button>
@@ -478,7 +478,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               {onBack && (
                 <button
                   onClick={onBack}
-                  className="md:hidden p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white"
+                  className="md:hidden p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-600"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
@@ -505,11 +505,11 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               </div>
 
               <div className="min-w-0">
-                <div className="font-bold text-sm sm:text-base truncate text-white group-hover/header:text-secondary transition-colors">
+                <div className="font-bold text-sm sm:text-base truncate text-slate-800 group-hover/header:text-primary transition-colors">
                   {chat.title}
                 </div>
 
-                <div className="text-[10px] sm:text-xs text-secondary/90 font-medium flex items-center gap-1">
+                <div className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1">
                   {chat.isGroup
                     ? "Group"
                     : typing
@@ -530,7 +530,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowSearch(true)}
-                className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white/70 hover:text-white"
+                className="p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-400 hover:text-primary"
                 title="Search messages"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -541,7 +541,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               {chat.isGroup && (
                 <button
                   onClick={() => setOpenManage(true)}
-                  className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-2 rounded-xl transition-all duration-200 font-semibold flex items-center gap-1.5 ring-1 ring-white/20"
+                  className="text-xs bg-primary/10 hover:bg-primary/20 text-primary px-3 py-2 rounded-xl transition-all duration-200 font-semibold flex items-center gap-1.5 ring-1 ring-primary/20"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -566,8 +566,8 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                       } catch (e) { console.error("Toggle favorite failed", e); }
                     }}
                     className={`p-2 rounded-xl transition-all duration-200 ring-1 ${chat.other?.isFavorite
-                      ? "bg-yellow-500/20 text-yellow-400 ring-yellow-500/30 shadow-[0_0_10px_rgba(250,204,21,0.2)]"
-                      : "bg-white/5 text-white/40 hover:text-white hover:bg-white/10 ring-white/10"
+                      ? "bg-yellow-500/20 text-yellow-600 ring-yellow-500/30 shadow-[0_0_10px_rgba(250,204,21,0.2)]"
+                      : "bg-white/40 text-slate-400 hover:text-yellow-500 hover:bg-white/60 ring-black/5"
                       }`}
                     title={chat.other?.isFavorite ? "Remove from favorites" : "Add to favorites"}
                   >
@@ -579,7 +579,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                   {/* Audio Call Button */}
                   <button
                     onClick={() => onStartCall?.("audio")}
-                    className="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-300 rounded-xl transition-all duration-200 ring-1 ring-green-500/30"
+                    className="p-2 bg-green-500/20 hover:bg-green-500/30 text-green-300 rounded-xl transition-all duration-200 ring-1 ring-green-500/30 active:scale-95"
                     title="Audio call"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -589,7 +589,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                   {/* Video Call Button */}
                   <button
                     onClick={() => onStartCall?.("video")}
-                    className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-xl transition-all duration-200 ring-1 ring-blue-500/30"
+                    className="p-2 bg-blue-500/20 hover:bg-blue-500/30 text-blue-300 rounded-xl transition-all duration-200 ring-1 ring-blue-500/30 active:scale-95"
                     title="Video call"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -603,8 +603,8 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                 <button
                   onClick={blockStatus.iBlockedThem ? handleUnblock : handleBlock}
                   className={`text-xs px-3 py-2 rounded-xl transition-all duration-200 font-semibold ring-1 ${blockStatus.iBlockedThem
-                    ? "bg-green-500/20 text-green-300 hover:bg-green-500/30 ring-green-500/30"
-                    : "bg-red-500/20 text-red-300 hover:bg-red-500/30 ring-red-500/30"
+                    ? "bg-green-100 text-green-700 hover:bg-green-200 ring-green-200"
+                    : "bg-red-50 text-red-600 hover:bg-red-100 ring-red-100"
                     }`}
                 >
                   {blockStatus.iBlockedThem ? "Unblock" : "Block"}
@@ -615,7 +615,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               <div className="relative">
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white/70 hover:text-white"
+                  className="p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-400 hover:text-primary"
                   title="More options"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -626,7 +626,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                 {showMenu && (
                   <>
                     <div className="fixed inset-0 z-[1000]" onClick={() => setShowMenu(false)} />
-                    <div className="absolute right-0 top-12 w-48 glass-card bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl z-[1010] py-2 animate-premium-in">
+                    <div className="absolute right-0 top-12 w-48 glass-card bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl z-[1010] py-2 animate-premium-in">
                       <button
                         onClick={async () => {
                           try {
@@ -640,8 +640,8 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                           } catch (e) { console.error("Toggle favorite failed", e); }
                         }}
                         className={`w-full px-4 py-3 text-left text-sm font-medium transition-colors flex items-center gap-3 ${chat.other?.isFavorite
-                          ? "text-yellow-400 hover:bg-yellow-500/5"
-                          : "text-white hover:bg-white/5"
+                          ? "text-yellow-600 hover:bg-yellow-50"
+                          : "text-slate-700 hover:bg-slate-50"
                           }`}
                         title={chat.other?.isFavorite ? "Remove from favorites" : "Add to favorites"}
                       >
@@ -653,7 +653,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
                       <button
                         onClick={handleArchive}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-white hover:text-white hover:bg-white/5 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
@@ -663,7 +663,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
                       <button
                         onClick={handleClearChat}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-white hover:text-white hover:bg-white/5 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -674,7 +674,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                       {!chat.isGroup && !chat.isSelfChat && (
                         <button
                           onClick={handleReportUser}
-                          className="w-full px-4 py-3 text-left text-sm font-medium text-orange-400/70 hover:text-orange-400 hover:bg-orange-500/5 transition-colors flex items-center gap-3"
+                          className="w-full px-4 py-3 text-left text-sm font-medium text-orange-600 hover:bg-orange-50 transition-colors flex items-center gap-3"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -686,7 +686,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                       {chat.isGroup && (
                         <button
                           onClick={handleReportGroup}
-                          className="w-full px-4 py-3 text-left text-sm font-medium text-orange-400/70 hover:text-orange-400 hover:bg-orange-500/5 transition-colors flex items-center gap-3"
+                          className="w-full px-4 py-3 text-left text-sm font-medium text-orange-600 hover:bg-orange-50 transition-colors flex items-center gap-3"
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -697,7 +697,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
                       <button
                         onClick={handleHide}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-red-400/70 hover:text-red-400 hover:bg-red-500/5 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50 transition-colors flex items-center gap-3"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -708,7 +708,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                       {/* ✅ Assign Task Button */}
                       <button
                         onClick={() => { setShowMenu(false); setOpenTaskModal(true); }}
-                        className="w-full px-4 py-3 text-left text-sm font-medium text-white hover:text-white hover:bg-white/5 transition-colors flex items-center gap-3"
+                        className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
@@ -724,7 +724,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               {onBack && (
                 <button
                   onClick={onBack}
-                  className="p-2 hover:bg-white/10 rounded-xl transition-all duration-200 text-white hidden sm:block"
+                  className="p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-500 hover:text-red-500 hidden sm:block"
                   title="Close chat"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -740,21 +740,21 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       {/* ✅ Block Status Banners */}
       {
         blockError && (
-          <div className="bg-red-900/50 text-red-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+          <div className="bg-red-50 text-red-600 border-b border-red-200 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center animate-fade-in">
             {blockError}
           </div>
         )
       }
       {
         blockStatus.theyBlockedMe && !blockStatus.iBlockedThem && (
-          <div className="bg-yellow-900/50 text-yellow-300 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+          <div className="bg-yellow-50 text-yellow-800 border-b border-yellow-200 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
             You cannot send messages to this user.
           </div>
         )
       }
       {
         blockStatus.iBlockedThem && (
-          <div className="bg-background-dark text-primary/60 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
+          <div className="bg-slate-100 text-slate-600 border-b border-slate-200 text-xs sm:text-sm px-3 sm:px-4 py-2 text-center">
             You have blocked this user. Unblock to send messages.
           </div>
         )
@@ -763,7 +763,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       {/* ✅ Pinned Messages Section */}
       {
         messages.filter(m => m.isPinned).length > 0 && (
-          <div className="bg-secondary/10 border-b border-secondary/20 px-3 sm:px-4 py-2">
+          <div className="bg-white/80 backdrop-blur-md border-b border-primary/10 px-3 sm:px-4 py-2 animate-fade-in">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-secondary-dark text-xs sm:text-sm font-semibold">📌 Pinned Messages</span>
               <span className="text-primary/60 text-[10px] sm:text-xs">
@@ -802,13 +802,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       {/* ✅ Messages Area */}
       <div
         ref={scrollerRef}
-        className="flex-1 overflow-y-auto p-3 sm:p-4 bg-background relative"
-        style={{
-          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.85)), url(${chatWallpaper})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundAttachment: 'local'
-        }}
+        className="flex-1 overflow-y-auto p-3 sm:p-4 bg-[#E9F4FF] relative"
       >
         <div className="space-y-2 relative z-10">
           {(searchQuery ? messages.filter(m => m.body?.toLowerCase().includes(searchQuery.toLowerCase())) : messages).map((m, index, arr) => {
@@ -820,7 +814,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               <div key={m._id}>
                 {showDate && (
                   <div className="flex justify-center my-6">
-                    <div className="bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black text-white/60 tracking-widest uppercase ring-1 ring-white/5 shadow-xl">
+                    <div className="bg-white/60 backdrop-blur-md px-4 py-1.5 rounded-full text-[10px] sm:text-xs font-black text-slate-500 tracking-widest uppercase ring-1 ring-slate-200/50 shadow-sm">
                       {new Date(m.createdAt).toDateString() === new Date().toDateString() ? "Today" :
                         new Date(m.createdAt).toDateString() === new Date(Date.now() - 86400000).toDateString() ? "Yesterday" :
                           new Date(m.createdAt).toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -848,9 +842,9 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       </div>
 
       {/* ✅ Input */}
-      <div className="border-t border-background-dark p-2 sm:p-3 bg-white">
+      <div className="border-t border-background-dark p-1 sm:p-1 bg-white">
         {blockStatus.isBlocked || chat.other?.isReportedByMe || chat.other?.hasReportedMe ? (
-          <div className="text-center text-primary/50 py-2 text-sm italic">
+          <div className="text-center text-primary/50 py-1 text-sm italic">
             {chat.other?.isReportedByMe
               ? "You have reported this user. Communication is disabled."
               : chat.other?.hasReportedMe

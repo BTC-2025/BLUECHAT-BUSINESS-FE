@@ -1,188 +1,3 @@
-// import { useState } from "react";
-// import dayjs from "dayjs";
-// import { socket } from "../socket";
-
-// export default function MessageBubble({ mine, text, time, status, messageId, chatId }) {
-//   const [menuOpen, setMenuOpen] = useState(false);
-
-//   const renderTicks = () => {
-//     if (!mine) return null;
-
-//     if (status === "seen") return <span className="text-blue-400">✔✔</span>;
-//     if (status === "delivered") return <span className="text-gray-300">✔✔</span>;
-//     return <span className="text-gray-300">✔</span>;
-//   };
-
-//   const deleteForMe = () => {
-//     socket.emit("message:delete", { messageId, forEveryone: false });
-//     setMenuOpen(false);
-//   };
-
-//   const deleteForEveryone = () => {
-//     if (!mine) return; // Only sender can delete for everyone
-//     socket.emit("message:delete", { messageId, forEveryone: true });
-//     setMenuOpen(false);
-//   };
-
-//   return (
-//     <div className={`relative max-w-[75%] ${mine ? "ml-auto" : ""}`}>
-//       {/* 3-dot menu button */}
-//       <div className="absolute -top-2 -right-2">
-//         <button
-//           className="text-neutral-400 text-sm hover:text-neutral-200"
-//           onClick={() => setMenuOpen(!menuOpen)}
-//         >
-//           ⋮
-//         </button>
-
-//         {/* Dropdown menu */}
-//         {menuOpen && (
-//           <div className="absolute right-0 mt-1 bg-neutral-800 rounded-lg shadow-lg p-2 text-xs min-w-[120px] border border-neutral-700 z-20">
-//             <button
-//               className="block w-full text-left px-2 py-1 hover:bg-neutral-700 rounded"
-//               onClick={deleteForMe}
-//             >
-//               Delete for me
-//             </button>
-
-//             {mine && (
-//               <button
-//                 className="block w-full text-left px-2 py-1 hover:bg-neutral-700 rounded text-red-400"
-//                 onClick={deleteForEveryone}
-//               >
-//                 Delete for everyone
-//               </button>
-//             )}
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Bubble */}
-//       <div
-//         className={`rounded-2xl px-4 py-2 ${
-//           mine ? "bg-teal-700" : "bg-neutral-800"
-//         }`}
-//       >
-//         <div className="whitespace-pre-wrap">{text}</div>
-
-//         {/* Time + ticks */}
-//         <div className="text-[10px] text-neutral-300 text-right mt-1 flex gap-1 justify-end items-center">
-//           <span>{dayjs(time).format("HH:mm")}</span>
-//           {renderTicks()}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
-// import { useState } from "react";
-// import dayjs from "dayjs";
-// import { socket } from "../socket";
-
-// export default function MessageBubble({ message, mine }) {
-//   const [menuOpen, setMenuOpen] = useState(false);
-
-//   const isDeletedForAll = message.deletedForEveryone;
-//   const isDeletedForMe = message.deletedFor?.includes?.(message.currentUserId);
-
-//   const isDeleted = isDeletedForAll || isDeletedForMe;
-
-//   const renderTicks = () => {
-//     if (isDeleted) return null;
-//     if (!mine) return null;
-
-//     if (message.status === "seen") return <span className="text-blue-400">✔✔</span>;
-//     if (message.status === "delivered") return <span className="text-gray-300">✔✔</span>;
-//     return <span className="text-gray-300">✔</span>;
-//   };
-
-//   const deleteForMe = () => {
-//     socket.emit("message:delete", {
-//       messageId: message._id,
-//       forEveryone: false
-//     });
-//     setMenuOpen(false);
-//   };
-
-//   const deleteForEveryone = () => {
-//     if (!mine) return;
-//     socket.emit("message:delete", {
-//       messageId: message._id,
-//       forEveryone: true
-//     });
-//     setMenuOpen(false);
-//   };
-
-//   // ✅ Deleted UI (WhatsApp style)
-//   if (isDeleted) {
-//     return (
-//       <div className={`max-w-[75%] ${mine ? "ml-auto" : ""}`}>
-//         <div className="bg-neutral-800 text-neutral-400 italic px-3 py-2 rounded-xl text-sm">
-//           This message was deleted
-//         </div>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className={`relative max-w-[75%] ${mine ? "ml-auto" : ""}`}>
-
-//       {/* Menu button */}
-//       <div className="absolute -top-2 -right-2 z-20">
-//         <button
-//           className="text-neutral-400 text-sm hover:text-neutral-200"
-//           onClick={() => setMenuOpen(!menuOpen)}
-//         >
-//           ⋮
-//         </button>
-
-//         {menuOpen && (
-//           <div className="absolute right-0 mt-1 bg-neutral-800 rounded-lg 
-//                           shadow-lg p-2 text-xs min-w-[140px] 
-//                           border border-neutral-700 z-30">
-
-//             {/* DELETE FOR ME */}
-//             <button
-//               className="block w-full text-left px-2 py-1 hover:bg-neutral-700 rounded"
-//               onClick={deleteForMe}
-//             >
-//               Delete for me
-//             </button>
-
-//             {/* DELETE FOR EVERYONE — only sender */}
-//             {mine && (
-//               <button
-//                 className="block w-full text-left px-2 py-1 hover:bg-neutral-700 rounded text-red-400"
-//                 onClick={deleteForEveryone}
-//               >
-//                 Delete for everyone
-//               </button>
-//             )}
-//           </div>
-//         )}
-//       </div>
-
-//       {/* Bubble */}
-//       <div
-//         className={`rounded-2xl px-4 py-2 ${
-//           mine ? "bg-teal-700" : "bg-neutral-800"
-//         }`}
-//       >
-//         {/* Message text */}
-//         <div className="whitespace-pre-wrap">{message.body}</div>
-
-//         {/* Time + ticks */}
-//         <div className="text-[10px] text-neutral-300 text-right mt-1 flex gap-1 items-center">
-//           <span>{dayjs(message.createdAt).format("HH:mm")}</span>
-//           {renderTicks()}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-
 import { useState, useEffect } from "react";
 import dayjs from "dayjs";
 import { socket } from "../socket";
@@ -257,9 +72,9 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
       );
     }
 
-    if (message.status === "seen") return <span className="text-blue-400">✔✔</span>;
-    if (message.status === "delivered") return <span className="text-gray-300">✔✔</span>;
-    return <span className="text-gray-300">✔</span>;
+    if (message.status === "seen") return <span className="text-primary-light">✔✔</span>;
+    if (message.status === "delivered") return <span className="text-white/50">✔✔</span>;
+    return <span className="text-white/30">✔</span>;
   };
 
   const deleteForMe = () => {
@@ -284,7 +99,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
   if (isDeleted) {
     return (
       <div className={`max-w-[75%] ${mine ? "ml-auto" : ""}`}>
-        <div className="bg-background-dark text-primary/50 italic px-3 py-2 rounded-xl text-sm">
+        <div className="bg-slate-100 text-slate-500 italic px-3 py-2 rounded-xl text-sm border border-slate-200">
           This message was deleted
         </div>
       </div>
@@ -323,7 +138,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
         return (
           <span
             key={i}
-            className={`font-bold ${isMe ? "bg-yellow-500/40 text-white px-1 rounded" : (mine ? "text-secondary" : "text-primary-light")}`}
+            className={`font-bold ${isMe ? "bg-primary/20 text-primary-dark px-1 rounded" : (mine ? "text-white font-black" : "text-primary")}`}
           >
             {part}
           </span>
@@ -337,11 +152,11 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
     <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
       {/* ✅ Chat Bubble with modern styling - fits content */}
       <div
-        className={`relative inline-block rounded-2xl px-4 py-2.5 animate-fade-in max-w-[75%] ${mine
-          ? "bg-gradient-to-br from-primary to-primary-light text-white rounded-br-md shadow-bubble"
+        className={`relative inline-block rounded-3xl px-5 py-3 animate-fade-in max-w-[75%] ${mine
+          ? "bg-gradient-to-br from-primary via-primary to-[#3375c4] text-white rounded-br-none shadow-premium border border-primary/20"
           : isMentioned
-            ? "bg-yellow-500/10 border-2 border-yellow-500/50 text-white rounded-bl-md shadow-[0_0_15px_rgba(234,179,8,0.3)]"
-            : "bg-white text-primary rounded-bl-md shadow-card border border-background-dark/50"
+            ? "bg-white border-2 border-primary text-slate-900 rounded-bl-none shadow-card" // ✅ Highlight style
+            : "bg-white text-slate-800 rounded-bl-none shadow-card border border-white/60"
           }`}
       >
         {/* ⋮ Menu - inside the bubble */}
@@ -349,7 +164,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
           <button
             className={`text-lg leading-none p-1 rounded transition-colors ${mine
               ? "text-white/50 hover:text-white hover:bg-white/10"
-              : "text-primary/40 hover:text-primary hover:bg-black/5"
+              : "text-slate-400 hover:text-primary hover:bg-slate-50"
               }`}
             onClick={() => setMenuOpen(!menuOpen)}
           >
@@ -358,11 +173,11 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
 
           {menuOpen && (
             <div className={`absolute mt-1 bg-white rounded-lg shadow-xl 
-                            p-2 text-xs min-w-[140px] border border-background-dark z-50 ${mine ? "right-0" : "left-0"
+                            p-2 text-xs min-w-[140px] border border-slate-100 z-50 ${mine ? "right-0" : "left-0"
               }`}>
 
               {/* Reaction picker */}
-              <div className="flex gap-1 pb-2 mb-2 border-b border-background-dark">
+              <div className="flex gap-1 pb-2 mb-2 border-b border-slate-100">
                 {REACTION_EMOJIS.map((emoji) => (
                   <button
                     key={emoji}
@@ -376,29 +191,29 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
 
               {/* Reply button */}
               <button
-                className="block w-full text-left px-2 py-1 hover:bg-background-dark rounded text-primary"
+                className="block w-full text-left px-2 py-1 hover:bg-slate-50 rounded text-slate-700"
                 onClick={() => {
                   onReply?.(message);
                   setMenuOpen(false);
                 }}
               >
-                ↩️ Reply
+                ↪️ Reply
               </button>
 
               {/* Forward button */}
               <button
-                className="block w-full text-left px-2 py-1 hover:bg-background-dark rounded text-primary"
+                className="block w-full text-left px-2 py-1 hover:bg-slate-50 rounded text-slate-700"
                 onClick={() => {
                   onForward?.(message);
                   setMenuOpen(false);
                 }}
               >
-                ↪️ Forward
+                ⏩ Forward
               </button>
 
               {/* Pin/Unpin button */}
               <button
-                className="block w-full text-left px-2 py-1 hover:bg-background-dark rounded text-secondary-dark"
+                className="block w-full text-left px-2 py-1 hover:bg-slate-50 rounded text-slate-700"
                 onClick={() => {
                   if (message.isPinned) {
                     socket.emit("message:unpin", { messageId: message._id, chatId: message.chat });
@@ -412,7 +227,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
               </button>
 
               <button
-                className="block w-full text-left px-2 py-1 hover:bg-background-dark rounded text-primary"
+                className="block w-full text-left px-2 py-1 hover:bg-slate-50 rounded text-slate-700"
                 onClick={deleteForMe}
               >
                 Delete for me
@@ -421,7 +236,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
               {/* Show "Delete for everyone" for sender OR admin in groups */}
               {(mine || isAdmin) && (
                 <button
-                  className="block w-full text-left px-2 py-1 hover:bg-background-dark rounded text-red-500"
+                  className="block w-full text-left px-2 py-1 hover:bg-red-50 rounded text-red-600"
                   onClick={deleteForEveryone}
                 >
                   Delete for everyone
@@ -432,17 +247,12 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
         </div>
 
         {/* Tail for bubble */}
-        <div className={`absolute bottom-0 w-3 h-3 ${mine
-          ? "right-0 translate-x-1/2 bg-primary-light"
-          : "left-0 -translate-x-1/2 bg-white border-l border-b border-background-dark/50"
-          }`} style={{
-            clipPath: mine ? 'polygon(0 0, 100% 100%, 0 100%)' : 'polygon(100% 0, 100% 100%, 0 100%)'
-          }} />
+        {/* Removed tail for cleaner look, relying on rounded corners logic (rounded-br-none / rounded-bl-none) */}
 
         {/* ✅ Show sender name for group chats (only for other users' messages) */}
         {isGroup && !mine && (
-          <div className="text-[11px] sm:text-xs text-secondary-dark font-bold mb-1.5 flex items-center gap-1.5 pr-6">
-            <span className="w-5 h-5 rounded-full bg-gradient-to-br from-secondary to-secondary-dark text-white grid place-items-center text-[8px] font-bold uppercase overflow-hidden">
+          <div className="text-[11px] sm:text-xs text-primary font-bold mb-1.5 flex items-center gap-1.5 pr-6">
+            <span className="w-5 h-5 rounded-full bg-primary/10 text-primary grid place-items-center text-[8px] font-bold uppercase overflow-hidden">
               {message.sender?.avatar ? (
                 <img src={message.sender.avatar} alt="" className="w-full h-full object-cover" />
               ) : (
@@ -455,7 +265,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
 
         {/* ✅ Forwarded indicator */}
         {message.forwardedFrom?.originalSender && (
-          <div className={`text-xs mb-1 italic ${mine ? "text-white/60" : "text-primary/50"}`}>
+          <div className={`text-xs mb-1 italic ${mine ? "text-white/60" : "text-slate-400"}`}>
             ↪️ Forwarded from {message.forwardedFrom.originalSender.full_name || message.forwardedFrom.originalSender.phone}
           </div>
         )}
@@ -464,7 +274,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
         {message.replyTo && (
           <div className={`text-xs mb-2 p-2 rounded-lg border-l-2 ${mine
             ? "bg-white/10 border-white/40 text-white/80"
-            : "bg-background-dark/50 border-secondary/60 text-primary/70"
+            : "bg-slate-50 border-primary/40 text-slate-600"
             }`}>
             <div className="font-semibold text-xs mb-0.5">
               {message.replyTo.sender?.full_name || message.replyTo.sender?.phone || "Unknown"}
@@ -492,11 +302,11 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
                     className="max-w-full max-h-60 rounded-lg"
                   />
                 ) : att.type === "audio" ? (
-                  <div className={`flex items-center gap-3 p-2 rounded-xl ${mine ? "bg-white/10" : "bg-background-dark/50"
+                  <div className={`flex items-center gap-3 p-2 rounded-xl ${mine ? "bg-white/10" : "bg-slate-50"
                     }`}>
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mine ? "bg-white/20" : "bg-secondary/20"
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center ${mine ? "bg-white/20" : "bg-primary/10"
                       }`}>
-                      <svg className={`w-5 h-5 ${mine ? "text-white" : "text-secondary"}`} fill="currentColor" viewBox="0 0 24 24">
+                      <svg className={`w-5 h-5 ${mine ? "text-white" : "text-primary"}`} fill="currentColor" viewBox="0 0 24 24">
                         <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm-1 1.93c-3.94-.49-7-3.85-7-7.93h2c0 3.31 2.69 6 6 6s6-2.69 6-6h2c0 4.08-3.06 7.44-7 7.93V22h-2v-6.07z" />
                       </svg>
                     </div>
@@ -512,7 +322,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
                     href={att.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${mine ? "bg-white/10 hover:bg-white/20" : "bg-background-dark hover:bg-background-dark/80"
+                    className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${mine ? "bg-white/10 hover:bg-white/20" : "bg-slate-50 hover:bg-slate-100"
                       }`}
                   >
                     <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -561,25 +371,25 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
                 }
               }}
               id={`copy-btn-${message._id}`}
-              className="absolute top-2 right-2 text-[10px] sm:text-xs bg-primary/90 hover:bg-primary text-white px-2.5 py-1 rounded-md transition-all font-medium"
+              className="absolute top-2 right-2 text-[10px] sm:text-xs bg-white text-primary px-2.5 py-1 rounded-md transition-all font-medium hover:bg-white/90"
             >
               Copy
             </button>
             {/* Code Block */}
-            <div className={`rounded-xl p-3 pt-8 overflow-x-auto text-xs sm:text-sm font-mono ${mine ? "bg-primary-dark/50" : "bg-background-dark/70"
+            <div className={`rounded-xl p-3 pt-8 overflow-x-auto text-xs sm:text-sm font-mono ${mine ? "bg-black/20" : "bg-slate-50 border border-slate-200"
               }`}>
               <pre className="whitespace-pre-wrap break-words">{message.body}</pre>
             </div>
           </div>
         ) : (message.body || decryptedBody) ? (
-          <div className="whitespace-pre-wrap text-sm sm:text-base break-words leading-relaxed">
+          <div className="whitespace-pre-wrap text-sm sm:text-base break-words leading-relaxed font-sans">
             {renderText()}
             {decryptionFailed && <span className="text-red-400 block text-xs mt-1">(Decryption failed)</span>}
           </div>
         ) : null}
 
         {/* ✅ Ticks + Time */}
-        <div className={`text-[10px] text-right mt-1.5 flex gap-1.5 items-center justify-end font-medium ${mine ? "text-white/60" : "text-primary/40"
+        <div className={`text-[10px] text-right mt-1.5 flex gap-1.5 items-center justify-end font-medium ${mine ? "text-white/60" : "text-slate-400"
           }`}>
           {message.encryptedBody && (
             <span title="End-to-end encrypted" className="opacity-70">🔒</span>
@@ -600,7 +410,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
               <button
                 key={emoji}
                 onClick={() => handleReaction(emoji)}
-                className={`text-xs px-1.5 py-0.5 rounded-full flex items-center gap-0.5 transition-colors ${mine ? "bg-white/20 hover:bg-white/30" : "bg-background-dark hover:bg-background-dark/70"
+                className={`text-xs px-1.5 py-0.5 rounded-full flex items-center gap-0.5 transition-colors ${mine ? "bg-white/20 hover:bg-white/30" : "bg-slate-100 hover:bg-slate-200"
                   }`}
               >
                 <span>{emoji}</span>

@@ -310,7 +310,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
           <div className="space-y-4">
             <button
               onClick={() => setOpenProfile(true)}
-              className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-2xl transition-all"
+              className="w-full flex items-center justify-between p-4 bg-white/60 hover:bg-white/80 rounded-2xl transition-all shadow-sm border border-white/40 text-slate-800"
             >
               <span>Account Information</span>
               <svg className="w-5 h-5 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
@@ -322,25 +322,25 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
             {!user?.isBusiness && (
               <button
                 onClick={() => setOpenBusinessReg(true)}
-                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-green-500/10 to-emerald-500/10 hover:from-green-500/20 hover:to-emerald-500/20 rounded-2xl transition-all border border-green-500/20"
+                className="w-full flex items-center justify-between p-4 bg-white hover:bg-white/90 rounded-2xl transition-all shadow-sm border border-black/5 group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                    <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center">
+                    <svg className="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div className="text-left">
-                    <div className="font-bold text-green-500">Register Business Account</div>
-                    <div className="text-[10px] opacity-60 uppercase tracking-widest font-black">Start selling with catalog</div>
+                    <div className="font-bold text-slate-900 group-hover:text-primary transition-colors">Register Business Account</div>
+                    <div className="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Start selling with catalog</div>
                   </div>
                 </div>
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                <svg className="w-5 h-5 text-slate-400 group-hover:text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
               </button>
             )}
 
             {/* ✅ App Settings for Connections */}
-            <div className="p-4 bg-white/5 rounded-2xl space-y-4 border border-white/5">
+            <div className="p-4 bg-white/60 rounded-2xl space-y-4 shadow-sm border border-white/40 text-slate-800">
               <h3 className="font-bold text-sm text-gray-400 uppercase tracking-wider">App Connection</h3>
               <div className="space-y-3">
                 <div>
@@ -372,7 +372,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               </div>
             </div>
 
-            <div className="p-4 bg-white/5 rounded-2xl space-y-4">
+            <div className="p-4 bg-white/60 rounded-2xl space-y-4 shadow-sm border border-white/40 text-slate-800">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-bold">Sound Notifications</div>
@@ -399,10 +399,10 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               </div>
             </div>
 
-            <div className="p-4 bg-white/5 rounded-2xl space-y-4">
+            <div className="p-4 bg-white/60 rounded-2xl space-y-4 shadow-sm border border-white/40 text-slate-800">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="font-bold text-emerald-400">Disappearing Messages</div>
+                  <div className="font-bold text-slate-900">Disappearing Messages</div>
                   <div className="text-[10px] opacity-40 uppercase tracking-widest font-black">Personal retention policy</div>
                 </div>
                 <select
@@ -419,7 +419,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                       alert("Failed to update retention policy");
                     }
                   }}
-                  className="bg-[#0f172a] text-xs font-bold py-1 px-2 rounded-lg border border-white/10 outline-none focus:ring-1 focus:ring-primary"
+                  className="bg-white text-[#0f172a] text-xs font-bold py-1 px-2 rounded-lg border border-slate-200 outline-none focus:ring-1 focus:ring-primary shadow-sm"
                 >
                   <option value={0}>Off</option>
                   <option value={1}>24 Hours</option>
@@ -469,17 +469,17 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       if (viewingCommunity && communityDetails) {
         // Drill Down View
         return (
-          <div className="flex-1 flex flex-col h-full bg-[#040712]">
+          <div className="flex-1 flex flex-col h-full bg-transparent">
             {/* Header */}
-            <div className="p-4 border-b border-white/5 flex items-center gap-4 sticky top-0 bg-[#040712]/80 backdrop-blur-md z-10 animate-fade-in">
+            <div className="p-4 border-b border-white/20 flex items-center gap-4 sticky top-0 bg-white/60 backdrop-blur-md z-10 animate-fade-in shadow-sm">
               <button
                 onClick={() => { setViewingCommunity(null); setCommunityDetails(null); }}
-                className="w-10 h-10 flex items-center justify-center bg-white/5 hover:bg-white/10 rounded-xl transition-all hover:scale-105 active:scale-95 text-white/70 hover:text-white"
+                className="w-10 h-10 flex items-center justify-center bg-white/40 hover:bg-white/60 rounded-xl transition-all hover:scale-105 active:scale-95 text-slate-600 hover:text-slate-900 shadow-sm"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
               </button>
               <div className="flex-1 min-w-0">
-                <h2 className="font-black text-xl leading-tight truncate text-white tracking-tight">{communityDetails.name}</h2>
+                <h2 className="font-black text-xl leading-tight truncate text-slate-900 tracking-tight">{communityDetails.name}</h2>
                 <p className="text-[10px] text-secondary font-bold uppercase tracking-widest mt-0.5">Community</p>
               </div>
               {communityDetails.admins?.includes(user?.id) && (
@@ -488,7 +488,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                   className="w-10 h-10 flex items-center justify-center bg-primary/10 hover:bg-primary/20 text-primary rounded-xl transition-all hover:scale-105 active:scale-95"
                   title="Manage Community"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
                 </button>
               )}
             </div>
@@ -498,33 +498,33 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               {communityDetails.announcementGroup && (
                 <div
                   onClick={() => onOpenChat(communityDetails.announcementGroup)}
-                  className="relative group p-4 rounded-2xl cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 border border-white/5 hover:border-primary/30"
+                  className="relative group p-4 rounded-2xl cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 border border-slate-200 bg-white hover:border-primary/30"
                 >
-                  {/* Gradient Background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] to-[#1e293b] z-0" />
-                  <div className="absolute inset-0 bg-primary/5 group-hover:bg-primary/10 transition-colors z-0" />
+                  {/* Subtle Gradient Background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-white to-slate-50 z-0" />
+                  <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity z-0" />
 
                   {/* Icon & Glitter */}
-                  <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
                     <svg className="w-24 h-24 text-primary" fill="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                   </div>
 
                   <div className="relative z-10 flex items-center gap-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-xl flex items-center justify-center text-white shadow-lg shadow-primary/20 overflow-hidden transform group-hover:rotate-6 transition-transform">
+                    <div className="w-12 h-12 bg-primary text-white rounded-xl flex items-center justify-center shadow-lg shadow-primary/20 overflow-hidden transform group-hover:scale-110 transition-transform">
                       <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" /></svg>
                     </div>
                     <div className="flex-1">
-                      <div className="font-black text-lg text-white group-hover:text-primary-light transition-colors">Announcements</div>
-                      <div className="text-xs font-medium text-white/50 group-hover:text-white/70 transition-colors">Official Community Updates</div>
+                      <div className="font-black text-lg text-slate-900 group-hover:text-primary transition-colors">Announcements</div>
+                      <div className="text-xs font-medium text-slate-500 group-hover:text-slate-700 transition-colors">Official Community Updates</div>
                     </div>
-                    <svg className="w-5 h-5 text-white/20 group-hover:text-primary-light transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
+                    <svg className="w-5 h-5 text-slate-300 group-hover:text-primary transition-all transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
                   </div>
                 </div>
               )}
 
               <div className="flex items-center justify-between mt-6 mb-3 px-1">
-                <div className="text-xs font-bold text-white/40 uppercase tracking-widest">Groups</div>
-                <div className="text-[10px] font-bold bg-white/5 text-white/40 px-2 py-0.5 rounded-full">{communityDetails.groups?.length || 0}</div>
+                <div className="text-xs font-bold text-slate-400 uppercase tracking-widest">Groups</div>
+                <div className="text-[10px] font-bold bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full">{communityDetails.groups?.length || 0}</div>
               </div>
 
               <div className="space-y-1">
@@ -532,36 +532,36 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                   <div
                     key={group.id}
                     onClick={() => group.isMember ? onOpenChat(group) : alert("You are not a member of this group.")}
-                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all border border-transparent ${group.isMember
-                      ? 'hover:bg-white/5 hover:border-white/5 cursor-pointer group active:scale-[0.99]'
+                    className={`flex items-center gap-4 p-3 rounded-2xl transition-all border border-transparent animate-slide-up ${group.isMember
+                      ? 'hover:bg-slate-50 hover:shadow-sm cursor-pointer group active:scale-[0.99]'
                       : 'opacity-50 grayscale cursor-not-allowed'
                       }`}
                   >
-                    <div className="w-10 h-10 bg-gradient-to-br from-indigo-500/20 to-purple-500/20 rounded-xl flex items-center justify-center font-bold text-white border border-white/5 group-hover:border-white/10 group-hover:shadow-[0_0_15px_rgba(99,102,241,0.2)] transition-all">
+                    <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center font-bold text-primary border border-primary/5 group-hover:border-primary/20 group-hover:shadow-sm transition-all">
                       {group.title?.[0]}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-bold text-gray-200 group-hover:text-white truncate transition-colors">{group.title}</div>
-                      <div className="text-xs text-gray-500 group-hover:text-gray-400 flex items-center gap-1.5">
+                      <div className="font-bold text-slate-800 group-hover:text-primary truncate transition-colors">{group.title}</div>
+                      <div className="text-xs text-slate-500 group-hover:text-slate-600 flex items-center gap-1.5">
                         <span>{group.participantsCount} members</span>
                         {group.isMember && (
                           <>
-                            <span className="w-1 h-1 rounded-full bg-emerald-500/50"></span>
-                            <span className="text-emerald-500 font-medium">Joined</span>
+                            <span className="w-1 h-1 rounded-full bg-primary/50"></span>
+                            <span className="text-primary font-medium">Joined</span>
                           </>
                         )}
                       </div>
                     </div>
                     {group.isMember && (
-                      <svg className="w-5 h-5 text-white/10 group-hover:text-white/30 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                      <svg className="w-5 h-5 text-slate-300 group-hover:text-slate-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
                     )}
                   </div>
                 ))}
 
                 {communityDetails.groups?.length === 0 && (
                   <div className="flex flex-col items-center justify-center py-10 opacity-40">
-                    <svg className="w-12 h-12 mb-3 text-white/20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
-                    <div className="text-sm font-medium">No groups yet</div>
+                    <svg className="w-12 h-12 mb-3 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" /></svg>
+                    <div className="text-sm font-medium text-slate-500">No groups yet</div>
                   </div>
                 )}
               </div>
@@ -574,14 +574,14 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       return (
         <div className="flex-1 flex flex-col h-full">
           <div className="px-5 pt-6 pb-2 flex justify-between items-center">
-            <h2 className="text-2xl font-black">Communities</h2>
-            <button onClick={() => setOpenCommunityCreate(true)} className="w-8 h-8 flex items-center justify-center bg-secondary text-white rounded-lg hover:bg-secondary-dark transition-colors shadow-lg shadow-secondary/20" title="Create Community">
+            <h2 className="text-2xl font-black text-slate-900">Communities</h2>
+            <button onClick={() => setOpenCommunityCreate(true)} className="w-8 h-8 flex items-center justify-center bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors shadow-lg shadow-primary/20" title="Create Community">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
             </button>
           </div>
 
           <div className="px-5 pb-4">
-            <p className="text-xs text-gray-400">Communities bring members together in topic-based groups.</p>
+            <p className="text-xs text-slate-400">Communities bring members together in topic-based groups.</p>
           </div>
 
           <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
@@ -589,28 +589,28 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               <div
                 key={comm.id}
                 onClick={() => setViewingCommunity(comm.id)}
-                className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/5"
+                className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl cursor-pointer transition-all border border-transparent hover:shadow-sm animate-slide-up group"
               >
                 <div className="relative">
-                  <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center text-indigo-400">
-                    {comm.icon ? <img src={comm.icon} className="w-full h-full object-cover rounded-xl" alt="" /> : <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>}
+                  <div className="w-12 h-12 bg-white border border-slate-100 rounded-xl flex items-center justify-center text-primary shadow-sm group-hover:scale-105 transition-transform">
+                    {comm.icon ? <img src={comm.icon} className="w-full h-full object-cover rounded-xl" alt="" /> : <svg className="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>}
                   </div>
                 </div>
                 <div className="flex-1">
-                  <div className="font-bold text-base text-gray-200">{comm.name}</div>
-                  <div className="text-xs text-gray-500 truncate">{comm.description || "No description"}</div>
+                  <div className="font-bold text-base text-slate-800 group-hover:text-primary transition-colors">{comm.name}</div>
+                  <div className="text-xs text-slate-500 truncate">{comm.description || "No description"}</div>
                 </div>
-                <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                <svg className="w-5 h-5 text-slate-300 group-hover:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
               </div>
             ))}
 
             {communities.length === 0 && (
               <div className="flex flex-col items-center justify-center py-10 opacity-50">
-                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                  <svg className="w-8 h-8 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 opacity-50 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                 </div>
-                <p className="text-sm font-bold">No communities</p>
-                <p className="text-xs">Create one to get started!</p>
+                <p className="text-sm font-bold text-slate-500">No communities</p>
+                <p className="text-xs text-slate-400">Create one to get started!</p>
               </div>
             )}
           </div>
@@ -641,19 +641,19 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               {activeTab === 'social' && socialView === 'contacts' && (
                 <button
                   onClick={() => { setSocialView('apps'); setSelectedApp(null); }}
-                  className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white/70 hover:text-white transition-all"
+                  className="p-2 -ml-2 rounded-xl bg-slate-100 hover:bg-white text-slate-500 hover:text-primary transition-all shadow-sm"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" /></svg>
                 </button>
               )}
-              <h2 className="text-2xl font-black">{activeTab === 'social' ? (socialView === 'contacts' ? selectedApp?.name : 'Social Apps') : getTitle()}</h2>
+              <h2 className="text-2xl font-black text-slate-900">{activeTab === 'social' ? (socialView === 'contacts' ? selectedApp?.name : 'Social Apps') : getTitle()}</h2>
             </div>
             <div className="flex gap-2">
               {activeTab === 'groups' && (
                 <>
                   <button
                     onClick={() => setOpenJoin(true)}
-                    className="h-8 px-3 flex items-center justify-center bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors text-xs font-bold ring-1 ring-white/10"
+                    className="h-8 px-3 flex items-center justify-center bg-slate-100 text-slate-600 rounded-lg hover:bg-slate-200 transition-colors text-xs font-bold ring-1 ring-slate-200"
                     title="Join group with code"
                   >
                     Join
@@ -671,7 +671,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
         {/* Online Section (Horizontal Scroll) */}
         {activeTab === "chats" && onlineUsers.length > 0 && (
           <div className="px-5 py-2">
-            <div className="text-[11px] font-bold text-light tracking-widest uppercase mb-2">Online</div>
+            <div className="text-[11px] font-bold text-slate-400 tracking-widest uppercase mb-2">Online</div>
             <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar no-scrollbar">
               {onlineUsers.map((u) => (
                 <button
@@ -679,16 +679,16 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                   onClick={() => onOpenChat(chats.find(c => !c.isGroup && c.other.id === u.id))}
                   className="flex-shrink-0 relative group"
                 >
-                  <div className="w-12 h-12 rounded-2xl overflow-hidden border border-white/10 group-hover:border-primary/50 transition-all">
+                  <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-100 group-hover:border-primary/50 transition-all shadow-sm">
                     {u.avatar ? (
                       <img src={u.avatar} alt="" className="w-full h-full object-cover" />
                     ) : (
-                      <div className="w-full h-full bg-primary/20 text-primary flex items-center justify-center font-bold">
+                      <div className="w-full h-full bg-primary/10 text-primary flex items-center justify-center font-bold">
                         {u.full_name?.[0] || '?'}
                       </div>
                     )}
                   </div>
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-accent border-[3px] border-[#040712] rounded-full" />
+                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-[3px] border-white rounded-full" />
                 </button>
               ))}
             </div>
@@ -708,27 +708,27 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                   <div
                     key={app._id}
                     onClick={() => { setSelectedApp(app); setSocialView('contacts'); }}
-                    className="flex items-center gap-4 p-4 hover:bg-white/5 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-white/5 group"
+                    className="flex items-center gap-4 p-4 hover:bg-slate-50 rounded-2xl cursor-pointer transition-all border border-transparent hover:border-slate-100 group animate-slide-up"
                   >
                     <div className="relative">
-                      <div className="w-12 h-12 bg-white/5 rounded-xl flex items-center justify-center text-white border border-white/5 overflow-hidden">
+                      <div className="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center text-slate-600 border border-slate-100 overflow-hidden">
                         {app.icon ? <img src={app.icon} className="w-full h-full object-cover" alt="" /> : (
                           <svg className="w-6 h-6 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
                         )}
                       </div>
-                      {unread > 0 && <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 h-4 flex items-center justify-center rounded-full border border-[#040712]">{unread}</span>}
+                      {unread > 0 && <span className="absolute -top-1 -right-1 bg-primary text-white text-[10px] font-bold px-1.5 h-4 flex items-center justify-center rounded-full border border-white">{unread}</span>}
                     </div>
                     <div className="flex-1">
-                      <div className="font-bold text-base text-gray-200 group-hover:text-white transition-colors">{app.name}</div>
-                      <div className="text-xs text-gray-500">Connected App</div>
+                      <div className="font-bold text-base text-slate-800 group-hover:text-primary transition-colors">{app.name}</div>
+                      <div className="text-xs text-slate-500">Connected App</div>
                     </div>
-                    <svg className="w-5 h-5 text-gray-700 group-hover:text-white/30 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
+                    <svg className="w-5 h-5 text-slate-300 group-hover:text-slate-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" /></svg>
                   </div>
                 );
               })}
               {connectedApps.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-10 opacity-40">
-                  <div className="text-sm">No connected apps</div>
+                  <div className="text-sm text-slate-500">No connected apps</div>
                 </div>
               )}
             </div>
@@ -760,7 +760,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   };
 
   return (
-    <div className="flex flex-col-reverse md:flex-row h-full bg-[#040712] overflow-hidden">
+    <div className="flex flex-col-reverse md:flex-row h-full overflow-hidden bg-white/50 backdrop-blur-3xl rounded-3xl shadow-float border border-white/50 relative z-10">
       <NavRail
         activeTab={activeTab}
         onTabChange={(id) => {
@@ -775,7 +775,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
         onOpenProfile={() => setOpenProfile(true)}
       />
 
-      <div className="flex-1 flex flex-col h-full overflow-hidden pb-[64px] md:pb-0">
+      <div className="flex-1 flex flex-col h-full overflow-hidden pb-[64px] md:pb-0 bg-white">
         {renderContent()}
       </div>
 

@@ -3,7 +3,7 @@ import ChatWindow from "../components/ChatWindow.js";
 import CallModal from "../components/CallModal.js";
 import StatusPage from "./StatusPage.js";
 import DashboardContent from "../components/DashboardContent"; // ✅ Business
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext.js";
 import logo from "../assets/Blue-Chat.jpeg";
@@ -182,6 +182,37 @@ export default function Home() {
     });
   };
 
+  // ✅ Resizable Sidebar State
+  const [sidebarWidth, setSidebarWidth] = useState(420);
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef(null);
+
+  // Handle Resizing
+  const startResizing = useCallback(() => setIsResizing(true), []);
+  const stopResizing = useCallback(() => setIsResizing(false), []);
+  const resize = useCallback((mouseMoveEvent) => {
+    if (isResizing) {
+      const newWidth = mouseMoveEvent.clientX;
+      if (newWidth > 260 && newWidth < 600) {
+        setSidebarWidth(newWidth);
+      }
+    }
+  }, [isResizing]);
+
+  useEffect(() => {
+    if (isResizing) {
+      window.addEventListener("mousemove", resize);
+      window.addEventListener("mouseup", stopResizing);
+    } else {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    }
+    return () => {
+      window.removeEventListener("mousemove", resize);
+      window.removeEventListener("mouseup", stopResizing);
+    };
+  }, [isResizing, resize, stopResizing]);
+
   if (view === "status") {
     return <StatusPage onBack={() => setView("chats")} />;
   }
@@ -195,18 +226,28 @@ export default function Home() {
       <div className="h-full w-full flex">
 
         {/* ✅ SIDEBAR - Hidden on mobile when chat is open */}
-        <div className={`
-          ${activeChat ? 'hidden' : 'flex'} 
-          md:flex
-          w-full md:w-1/3 lg:w-1/4 
-          h-full overflow-hidden border-r border-background-dark
-          flex-col
-        `}>
+        <div
+          ref={sidebarRef}
+          className={`
+            ${activeChat ? 'hidden' : 'flex'} 
+            md:flex
+            h-full overflow-hidden border-r border-background-dark
+            flex-col relative
+            flex-shrink-0
+          `}
+          style={{ width: window.innerWidth >= 768 ? sidebarWidth : '100%' }}
+        >
           <Sidebar
             onOpenChat={handleOpenChat}
             activeChatId={activeChat?.id}
             onViewStatus={() => setView("status")}
             onViewMyBusiness={() => setView("my-business")}
+          />
+
+          {/* Resize Handle */}
+          <div
+            className="hidden md:block absolute right-0 top-0 w-1 h-full cursor-col-resize hover:bg-primary/50 transition-colors z-50"
+            onMouseDown={startResizing}
           />
         </div>
 
@@ -214,9 +255,8 @@ export default function Home() {
         <div className={`
           ${activeChat ? 'flex' : 'hidden'} 
           md:flex
-          w-full md:w-2/3 lg:w-3/4 
           h-full overflow-hidden
-          flex-col
+          flex-col flex-1 min-w-0
         `}>
           {activeChat ? (
             <ChatWindow
@@ -235,7 +275,6 @@ export default function Home() {
             </div>
           )}
         </div>
-
       </div>
 
       {/* ✅ Call Modal */}

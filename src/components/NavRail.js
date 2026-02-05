@@ -19,13 +19,12 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
     return (
         <div className="
             w-full h-[64px] 
-            md:w-[64px] md:h-full 
-            bg-[#3b82f6] 
+            md:w-[72px] md:h-full 
+            bg-transparent border-none
             flex flex-row md:flex-col items-center 
-            px-4 md:px-0 py-0 md:py-6 gap-2 md:gap-8 
+            px-4 md:px-0 py-0 md:py-6 gap-2 md:gap-6 
             z-50 
             fixed bottom-0 md:relative
-            border-t md:border-t-0 border-white/10
         ">
             {/* Logo Removed */}
 
@@ -36,12 +35,12 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
                         key={tab.id}
                         onClick={() => onTabChange(tab.id)}
                         className={`
-                            w-12 h-12 md:w-12 md:h-12 
-                            rounded-xl flex items-center justify-center 
+                            w-12 h-12 md:w-14 md:h-14 
+                            rounded-2xl flex items-center justify-center 
                             transition-all duration-300 group relative 
                             ${activeTab === tab.id
-                                ? 'bg-white/20 text-white shadow-lg'
-                                : 'text-white/60 hover:bg-white/10 hover:text-white'
+                                ? 'bg-primary/10 text-primary shadow-glow ring-2 ring-primary/20'
+                                : 'text-slate-400 hover:bg-primary/5 hover:text-primary'
                             }
                         `}
                         title={tab.label}
@@ -105,7 +104,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
                             )}
                         </span>
                         {activeTab === tab.id && (
-                            <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-6 bg-white rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(255,255,255,0.5)]" />
+                            <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-8 bg-primary rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(25,91,172,0.5)]" />
                         )}
                     </button>
                 ))}
@@ -114,7 +113,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
             {/* Profile Avatar (Bottom/End) */}
             <button
                 onClick={onOpenProfile}
-                className="w-10 h-10 md:w-12 md:h-12 rounded-2xl overflow-hidden border-2 border-white/20 hover:border-white transition-all duration-300 ring-2 ring-white/0 hover:ring-white/20"
+                className="w-10 h-10 md:w-12 md:h-12 rounded-2xl overflow-hidden border-2 border-white/50 hover:border-primary transition-all duration-300 ring-2 ring-white/0 hover:ring-primary/20 shadow-md"
             >
                 {user?.avatar ? (
                     <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />

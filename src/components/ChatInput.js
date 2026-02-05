@@ -11,7 +11,6 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
   // ✅ Handle prefill message (e.g. from product inquiry)
   useEffect(() => {
     if (prefillMessage) {
-      setVal(prev => prev || prefillMessage);
       setVal(prefillMessage);
       textareaRef.current?.focus();
     }
@@ -260,24 +259,25 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
   };
 
   return (
-    <div className="space-y-2 relative">
+    <div className="pt-2 relative">
       {/* Reply Preview */}
       {replyTo && (
-        <div className="flex items-center gap-2 p-2 bg-secondary/10 rounded-xl border border-secondary/30">
+        <div className="flex items-center gap-2 p-2 mb-2 bg-white/60 backdrop-blur-sm rounded-xl border border-primary/20 shadow-sm animate-slide-up">
+          <div className="w-1 h-8 bg-primary rounded-full" />
           <div className="flex-1 min-w-0">
-            <div className="text-xs font-semibold text-secondary">
+            <div className="text-xs font-bold text-primary">
               Replying to {replyTo.sender?.full_name || replyTo.sender?.phone || "Unknown"}
             </div>
-            <div className="text-sm text-primary/70 truncate">
-              {replyTo.body || "[attachment]"}
+            <div className="text-xs text-slate-600 truncate opacity-80">
+              {replyTo.body || (replyTo.attachments?.length ? "[attachment]" : "")}
             </div>
           </div>
           <button
             onClick={onCancelReply}
-            className="p-1 text-primary/50 hover:text-primary rounded-lg hover:bg-white/50 transition-colors"
+            className="p-1.5 text-slate-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-colors"
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
@@ -285,16 +285,16 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
       {/* Scheduled Time Indicator */}
       {scheduledAt && (
-        <div className="flex items-center gap-2 px-3 py-2 bg-blue-500/10 border border-blue-500/20 rounded-xl animate-fade-in">
-          <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="flex items-center gap-2 px-3 py-2 mb-2 bg-blue-50/90 backdrop-blur-sm border border-blue-200 rounded-xl animate-fade-in shadow-sm w-fit max-w-full">
+          <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <span className="text-xs font-bold text-blue-600">
+          <span className="text-xs font-bold text-blue-700 truncate">
             Scheduled: {new Date(scheduledAt).toLocaleString()}
           </span>
           <button
             onClick={() => setScheduledAt(null)}
-            className="ml-auto p-1 hover:bg-blue-500/20 rounded-lg text-blue-500 transition-colors"
+            className="ml-2 p-1 hover:bg-blue-100 rounded-lg text-blue-600 transition-colors"
           >
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -305,37 +305,25 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
       {/* Attachment Preview */}
       {attachments.length > 0 && (
-        <div className="flex gap-2 flex-wrap p-2 bg-white/50 rounded-xl border border-background-dark/30">
+        <div className="flex gap-2 p-2 mb-2 overflow-x-auto custom-scrollbar">
           {attachments.map((att, index) => (
-            <div key={index} className="relative group">
+            <div key={index} className="relative group flex-shrink-0">
               {att.type === "image" ? (
                 <img
                   src={att.url}
                   alt={att.name}
-                  className="w-16 h-16 object-cover rounded-lg border border-background-dark/30"
+                  className="w-16 h-16 object-cover rounded-xl border border-slate-200 shadow-sm"
                 />
-              ) : att.type === "video" ? (
-                <div className="w-16 h-16 bg-primary/10 rounded-lg border border-background-dark/30 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-primary" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
-                </div>
-              ) : att.type === "audio" ? (
-                <div className="w-16 h-16 bg-secondary/10 rounded-lg border border-background-dark/30 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-secondary" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
-                  </svg>
-                </div>
               ) : (
-                <div className="w-16 h-16 bg-background-dark/50 rounded-lg border border-background-dark/30 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-primary/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                <div className="w-16 h-16 bg-white rounded-xl border border-slate-200 flex items-center justify-center shadow-sm text-primary">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                   </svg>
                 </div>
               )}
               <button
                 onClick={() => removeAttachment(index)}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-white text-red-500 border border-slate-100 rounded-full text-xs flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
               >
                 ×
               </button>
@@ -346,23 +334,23 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
       {/* Datetime Picker Modal */}
       {showPicker && (
-        <div className="p-4 bg-white rounded-2xl shadow-2xl border border-background-dark/30 animate-premium-in">
+        <div className="absolute bottom-full mb-4 right-0 z-50 p-4 bg-white/95 backdrop-blur-xl rounded-2xl shadow-premium border border-white/60 w-[300px] animate-premium-in">
           <div className="flex items-center justify-between mb-3">
-            <h4 className="text-sm font-black text-primary uppercase tracking-wider">Schedule Release</h4>
-            <button onClick={() => setShowPicker(false)} className="text-primary/40 hover:text-primary transition-colors">
+            <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Schedule Release</h4>
+            <button onClick={() => setShowPicker(false)} className="text-slate-400 hover:text-slate-600 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" /></svg>
             </button>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex gap-2">
             <input
               type="datetime-local"
-              className="flex-1 p-3 bg-background border border-background-dark/50 rounded-xl outline-none focus:ring-2 focus:ring-primary/50 text-sm font-bold text-primary"
+              className="flex-1 p-2 bg-slate-50 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-primary/20 text-sm font-bold text-slate-800"
               min={new Date().toISOString().slice(0, 16)}
               onChange={(e) => setScheduledAt(e.target.value)}
             />
             <button
               onClick={() => setShowPicker(false)}
-              className="px-4 py-3 bg-primary text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition-all"
+              className="px-3 bg-primary text-white rounded-lg font-bold text-sm shadow-sm hover:shadow-md transition-all"
             >
               Set
             </button>
@@ -372,30 +360,28 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
       {/* Mention Suggestions */}
       {showMentions && filteredMembers.length > 0 && (
-        <div className="absolute bottom-full left-0 w-64 mb-2 bg-[#0f172a]/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] animate-premium-in">
-          <div className="p-2 border-b border-white/5 text-[10px] font-black uppercase tracking-widest text-white/40">
-            Mention Participant
+        <div className="absolute bottom-full left-0 w-64 mb-2 bg-white/90 backdrop-blur-xl border border-white/60 rounded-2xl shadow-premium overflow-hidden z-[100] animate-slide-up">
+          <div className="p-2 border-b border-primary/5 text-[10px] font-bold uppercase tracking-widest text-primary/60 bg-primary/5">
+            Mention Member
           </div>
           <div className="max-h-48 overflow-y-auto custom-scrollbar">
             {filteredMembers.map((m, idx) => (
               <button
                 key={m.id}
                 onClick={() => insertMention(m)}
-                className={`w-full flex items-center gap-3 px-4 py-3 transition-all ${idx === mentionIndex ? "bg-primary text-white" : "hover:bg-white/5 text-white/70"
+                className={`w-full flex items-center gap-3 px-3 py-2 transition-all ${idx === mentionIndex ? "bg-primary/10" : "hover:bg-white/50"
                   }`}
               >
-                <div className="w-8 h-8 rounded-full overflow-hidden bg-primary/20 flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary-dark text-white flex items-center justify-center font-bold text-xs shadow-sm">
                   {m.avatar ? (
-                    <img src={m.avatar} alt="" className="w-full h-full object-cover" />
+                    <img src={m.avatar} alt="" className="w-full h-full object-cover rounded-full" />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-bold text-xs uppercase">
-                      {m.name?.[0] || "?"}
-                    </div>
+                    m.name?.[0] || "?"
                   )}
                 </div>
-                <div className="flex-1 text-left">
-                  <div className="font-bold text-sm truncate">{m.name}</div>
-                  <div className="text-[10px] opacity-60 truncate">{m.phone}</div>
+                <div className="flex-1 text-left min-w-0">
+                  <div className="font-bold text-sm text-slate-800 truncate">{m.name}</div>
+                  <div className="text-[10px] text-slate-500 truncate">{m.phone}</div>
                 </div>
               </button>
             ))}
@@ -405,20 +391,19 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
       {/* Recording UI */}
       {recording && (
-        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-red-50 to-red-100 rounded-xl border border-red-200">
+        <div className="flex items-center gap-3 p-2 bg-red-50/80 backdrop-blur-sm rounded-full border border-red-100 animate-fade-in mx-2 mb-2">
           {/* Animated waveform */}
-          <div className="flex items-center gap-1">
-            <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "0ms" }} />
-            <div className="w-1 h-6 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "150ms" }} />
-            <div className="w-1 h-3 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "300ms" }} />
-            <div className="w-1 h-5 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "450ms" }} />
-            <div className="w-1 h-4 bg-red-500 rounded-full animate-pulse" style={{ animationDelay: "600ms" }} />
+          <div className="flex items-center gap-1 pl-2">
+            {[1, 2, 3, 4, 3, 2, 1].map((h, i) => (
+              <div key={i} className="w-1 bg-red-500 rounded-full animate-pulse"
+                style={{ height: `${h * 4}px`, animationDelay: `${i * 100}ms` }} />
+            ))}
           </div>
-          <span className="text-red-600 font-semibold">{formatTime(recordingTime)}</span>
+          <span className="text-red-600 font-bold text-sm min-w-[3rem]">{formatTime(recordingTime)}</span>
           <div className="flex-1" />
           <button
             onClick={cancelRecording}
-            className="p-2.5 text-red-500 hover:bg-red-200 rounded-full transition-all"
+            className="p-2 text-red-500 hover:bg-white rounded-full transition-all"
             title="Cancel"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -427,7 +412,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
           </button>
           <button
             onClick={stopRecording}
-            className="p-2.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-all shadow-md hover:shadow-lg"
+            className="p-2 bg-red-500 text-white rounded-full hover:shadow-lg hover:scale-105 transition-all shadow-md"
             title="Send"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,44 +422,36 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
         </div>
       )}
 
-      {/* Uploading Voice Message UI */}
+      {/* Uploading Spinner */}
       {!recording && uploading && (
-        <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-secondary/10 to-secondary/20 rounded-xl border border-secondary/30">
-          <svg className="w-6 h-6 text-secondary animate-spin" fill="none" viewBox="0 0 24 24">
+        <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-20 rounded-xl">
+          <svg className="w-8 h-8 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
-          <span className="text-secondary font-medium">Sending voice message...</span>
         </div>
       )}
 
-      {/* Input Row */}
+      {/* Input Row - Floating Glass Pill */}
+      {/* Input Row - Floating Glass Pill */}
+      {/* Input Row - Floating Glass Pill */}
       {!recording && (
-        <div className="flex gap-3 items-end">
-          {/* Attachment Button */}
+        <div className="flex items-end gap-1.5 p-1 bg-white rounded-[2rem] shadow-float border border-white/60 backdrop-blur-xl relative z-20">
+
           <button
             onClick={() => fileInputRef.current?.click()}
-            disabled={uploading}
-            className="p-3 bg-white/80 border border-background-dark/50 rounded-2xl hover:bg-background-dark transition-all duration-200 disabled:opacity-50"
+            className="p-2 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5 transition-all flex-shrink-0"
             title="Attach file"
           >
-            {uploading ? (
-              <svg className="w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-              </svg>
-            ) : (
-              <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-              </svg>
-            )}
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+            </svg>
           </button>
 
-          {/* Schedule Button */}
           {!val.trim() && attachments.length === 0 && (
             <button
               onClick={() => setShowPicker(!showPicker)}
-              className={`p-3 border rounded-2xl transition-all duration-200 ${showPicker || scheduledAt ? 'bg-blue-500/10 border-blue-500/50 text-blue-500' : 'bg-white/80 border-background-dark/50 text-primary hover:bg-background-dark'}`}
+              className={`p-2 rounded-full transition-all flex-shrink-0 ${scheduledAt ? 'text-blue-600 bg-blue-50' : 'text-slate-400 hover:text-primary hover:bg-primary/5'}`}
               title="Schedule message"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -494,40 +471,34 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
 
           <textarea
             ref={textareaRef}
-            className="flex-1 bg-white/80 backdrop-blur-sm border border-background-dark/50 rounded-2xl px-4 py-3 outline-none resize-none overflow-y-auto text-sm sm:text-base focus:ring-2 focus:ring-secondary/50 focus:border-secondary transition-all duration-200 text-primary placeholder:text-primary/40 shadow-sm"
+            className="flex-1 bg-transparent border-none outline-none resize-none overflow-y-auto text-slate-800 placeholder-slate-400 py-2.5 px-1 max-h-[100px] text-[15px] leading-relaxed"
             placeholder="Type a message..."
             value={val}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             rows={1}
-            style={{ maxHeight: "150px" }}
+            style={{ minHeight: '44px' }}
           />
 
-          {/* Voice Message Button */}
           {!val.trim() && attachments.length === 0 ? (
             <button
               onClick={startRecording}
-              disabled={uploading}
-              className="p-3 bg-secondary/10 border border-secondary/30 rounded-2xl hover:bg-secondary/20 transition-all duration-200 disabled:opacity-50"
+              className="p-2 rounded-full text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all flex-shrink-0"
               title="Record voice message"
             >
-              <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
             </button>
           ) : (
             <button
               onClick={submit}
-              disabled={(!val.trim() && attachments.length === 0) || uploading}
-              className={`px-4 sm:px-5 py-3 bg-gradient-to-r ${scheduledAt ? 'from-blue-600 to-blue-400' : 'from-primary to-primary-light'} rounded-2xl hover:brightness-110 transition-all duration-200 font-semibold text-sm sm:text-base text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+              disabled={uploading}
+              className={`p-2 rounded-full bg-gradient-to-br transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center flex-shrink-0 ${scheduledAt ? 'from-blue-600 to-blue-500' : 'from-primary to-[#3375c4]'
+                } text-white`}
             >
-              <span className="hidden sm:inline">{scheduledAt ? 'Schedule' : 'Send'}</span>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {scheduledAt ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                )}
+              <svg className="w-5 h-5 translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
               </svg>
             </button>
           )}

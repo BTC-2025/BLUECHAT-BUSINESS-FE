@@ -52,11 +52,11 @@ export default function SearchBar({ onOpen }) {
     <div className="space-y-4">
       <div className="flex gap-2">
         <div className="flex-1 relative">
-          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           <input
-            className="w-full bg-white/[0.03] border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500/50 transition-all duration-300 text-white placeholder:text-white/20 shadow-inner group"
+            className="w-full bg-slate-100 border border-slate-200 rounded-2xl pl-11 pr-4 py-3 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/50 transition-all duration-300 text-slate-800 placeholder:text-slate-400 shadow-inner group"
             placeholder="Search phones..."
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
@@ -64,7 +64,7 @@ export default function SearchBar({ onOpen }) {
           />
         </div>
         <button
-          className="px-5 py-3 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95"
+          className="px-5 py-3 bg-primary hover:bg-primary-dark text-white rounded-2xl text-xs font-black uppercase tracking-widest transition-all duration-300 active:scale-95 shadow-lg shadow-primary/20"
           onClick={search}
         >
           Go

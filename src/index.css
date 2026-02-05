@@ -2,56 +2,114 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --premium-glass: rgba(255, 255, 255, 0.08);
-  --premium-glass-border: rgba(255, 255, 255, 0.12);
-  --premium-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  --sapphire: #0f172a;
-  --emerald-accent: #10b981;
+@layer base {
+  body {
+    @apply bg-background text-slate-800 font-sans antialiased overflow-hidden selection:bg-primary-light selection:text-white;
+    background-color: #E9F4FF;
+  }
 }
 
-body {
-  background: #000;
-  color: white;
-  @apply font-sans antialiased;
+@layer utilities {
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.05);
+  }
+
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  }
+
+  .glass-input {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .glass-input:focus {
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(25, 91, 172, 0.3);
+    box-shadow: 0 0 0 4px rgba(25, 91, 172, 0.08);
+  }
+
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .animate-gradient-xy {
+    animation: gradient-xy 3s ease infinite;
+    background-size: 200% 200%;
+  }
+
+  .animate-pulse-slow {
+    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .animate-scale-up {
+    animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes gradient-xy {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  @keyframes scaleUp {
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
 }
 
-/* Glassmorphism Utilities */
-.glass-panel {
-  background: var(--premium-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--premium-glass-border);
-}
-
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-/* Premium Animations */
-@keyframes premium-fade-in {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes sapphire-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(29, 78, 216, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(29, 78, 216, 0.4); }
-}
-
-.animate-premium-in {
-  animation: premium-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.hover-sapphire:hover {
-  animation: sapphire-glow 2s infinite ease-in-out;
-}
-
-/* Custom Scrollbar for Premium Look */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 4px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -59,28 +117,23 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.05);
+  background: #cbd5e1;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: #94a3b8;
 }
 
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
 }
 
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-/* Premium shadows */
-.shadow-bubble {
-  box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.2);
-}
-
-.shadow-card {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.5);
+  border-radius: 4px;
 }
