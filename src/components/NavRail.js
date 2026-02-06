@@ -22,14 +22,14 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
             md:w-[72px] md:h-full 
             bg-transparent border-none
             flex flex-row md:flex-col items-center 
-            px-4 md:px-0 py-0 md:py-6 gap-2 md:gap-6 
+            px-4 md:px-0 py-0 md:py-1 gap-2 md:gap-1 
             z-50 
             fixed bottom-0 md:relative
         ">
             {/* Logo Removed */}
 
             {/* Navigation Icons */}
-            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-6 w-full pt-4">
+            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-1 w-full pt-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}

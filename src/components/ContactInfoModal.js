@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useCallback } from "react";
 import axios from 'axios';
 import { API_BASE } from '../api';
+import ShoppingCartModal from './ShoppingCartModal';
 
 export default function ContactInfoModal({ contact, open, onClose, onProductInquiry }) {
     const [activeTab, setActiveTab] = useState('info'); // 'info' or 'products'
     const [business, setBusiness] = useState(null);
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    // Shopping cart state
+    const [cart, setCart] = useState([]);
+    const [showCart, setShowCart] = useState(false);
 
 
 
@@ -27,6 +32,47 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
         }
     }, [contact]);
 
+    // Cart handlers
+    const addToCart = (product) => {
+        setCart(prevCart => {
+            const existing = prevCart.find(item => item._id === product._id);
+            if (existing) {
+                return prevCart.map(item =>
+                    item._id === product._id
+                        ? { ...item, quantity: item.quantity + 1 }
+                        : item
+                );
+            }
+            return [...prevCart, { ...product, quantity: 1 }];
+        });
+    };
+
+    const updateQuantity = (productId, newQuantity) => {
+        if (newQuantity < 1) return;
+        setCart(prevCart =>
+            prevCart.map(item =>
+                item._id === productId ? { ...item, quantity: newQuantity } : item
+            )
+        );
+    };
+
+    const removeFromCart = (productId) => {
+        setCart(prevCart => prevCart.filter(item => item._id !== productId));
+    };
+
+    const clearCart = () => {
+        setCart([]);
+    };
+
+    const handlePlaceOrder = (orderMessage) => {
+        // Send order to chat input
+        onProductInquiry?.({ orderText: orderMessage });
+        // Close modals and clear cart
+        setShowCart(false);
+        onClose();
+        clearCart();
+    };
+
     useEffect(() => {
         if (open) {
             console.log('ContactInfoModal Open:', { contact, isBusiness: contact?.isBusiness });
@@ -38,6 +84,7 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
             setBusiness(null);
             setProducts([]);
             setActiveTab('info');
+            setCart([]); // Clear cart when closing modal
         }
     }, [open, contact, loadBusinessData]);
 
@@ -54,14 +101,35 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
             >
                 {/* Header/Banner Area */}
                 <div className="relative h-32 bg-gradient-to-r from-primary to-primary-light shrink-0">
-                    <button
-                        onClick={onClose}
-                        className="absolute top-4 right-4 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors z-10"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div className="absolute top-4 right-4 flex gap-2">
+                        {/* Cart Button (Only for business) */}
+                        {contact.isBusiness && business && (
+                            <button
+                                onClick={() => setShowCart(true)}
+                                className="relative p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors z-10"
+                                title="View cart"
+                            >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                                {cart.length > 0 && (
+                                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">
+                                        {cart.length}
+                                    </span>
+                                )}
+                            </button>
+                        )}
+
+                        {/* Close Button */}
+                        <button
+                            onClick={onClose}
+                            className="p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors z-10"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                     {contact.isBusiness && business && (
                         <div className="absolute bottom-4 left-6 text-white">
                             <h1 className="text-2xl font-black drop-shadow-md">{business.businessName}</h1>
@@ -202,13 +270,14 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
                                             )}
 
                                             <button
-                                                onClick={() => {
-                                                    onProductInquiry?.(product);
-                                                    onClose();
-                                                }}
-                                                className="w-full py-2 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg font-bold text-sm transition-colors mt-auto flex items-center justify-center gap-2"
+                                                onClick={() => addToCart(product)}
+                                                disabled={!product.inStock}
+                                                className={`w-full py-2 rounded-lg font-bold text-sm transition-colors mt-auto flex items-center justify-center gap-2 ${product.inStock
+                                                        ? 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
+                                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                    }`}
                                             >
-                                                <span>💬</span> Know More
+                                                <span>🛒</span> {product.inStock ? 'Add to Cart' : 'Out of Stock'}
                                             </button>
                                         </div>
                                     ))}
@@ -227,6 +296,17 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
                         Close
                     </button>
                 </div>
+
+                {/* Shopping Cart Modal */}
+                <ShoppingCartModal
+                    isOpen={showCart}
+                    onClose={() => setShowCart(false)}
+                    cart={cart}
+                    onUpdateQuantity={updateQuantity}
+                    onRemoveItem={removeFromCart}
+                    onClearCart={clearCart}
+                    onPlaceOrder={handlePlaceOrder}
+                />
             </div>
         </div>
     );

@@ -135,6 +135,13 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
   }, [chat.id, user?.token, user.id]);
 
   const handleProductInquiry = (product) => {
+    // Handle cart order (product is an object with orderText)
+    if (product?.orderText) {
+      setPrefillMessage(product.orderText);
+      return;
+    }
+
+    // Handle single product inquiry
     const currencySymbol = product.currency === 'INR' ? '₹' : product.currency;
     setPrefillMessage(`${product.name} - ${currencySymbol} ${product.price}\n`);
   };
