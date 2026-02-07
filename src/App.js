@@ -45,6 +45,22 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/status"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-business"
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
@@ -52,7 +68,12 @@ function AppRoutes() {
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
         <AppRoutes />
       </BrowserRouter>
     </AuthProvider>

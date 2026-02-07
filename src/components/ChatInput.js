@@ -3,6 +3,7 @@ import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { API_BASE } from "../api";
+import EmojiPicker from "emoji-picker-react";
 
 export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, members = [], prefillMessage }) {
   const { user } = useAuth();
@@ -23,6 +24,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
   const [scheduledAt, setScheduledAt] = useState(null); // ✅ New State
   const [showPicker, setShowPicker] = useState(false); // ✅ New State
   const [showMentions, setShowMentions] = useState(false); // ✅ New State
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // ✅ Emoji Picker State
   const [mentionQuery, setMentionQuery] = useState("");
   const [mentionIndex, setMentionIndex] = useState(0);
 
@@ -258,6 +260,25 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  // ✅ Emoji picker handler
+  const onEmojiClick = (emojiObject) => {
+    setVal(prev => prev + emojiObject.emoji);
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
+  // ✅ Close emoji picker when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (showEmojiPicker && !e.target.closest('.emoji-picker-container')) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showEmojiPicker]);
+
   return (
     <div className="pt-2 relative">
       {/* Reply Preview */}
@@ -432,6 +453,17 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
         </div>
       )}
 
+      {/* Emoji Picker */}
+      {showEmojiPicker && (
+        <div className="emoji-picker-container absolute bottom-full mb-2 left-0 z-50 animate-premium-in">
+          <EmojiPicker
+            onEmojiClick={onEmojiClick}
+            theme="light"
+            previewConfig={{ showPreview: false }}
+          />
+        </div>
+      )}
+
       {/* Input Row - Floating Glass Pill */}
       {/* Input Row - Floating Glass Pill */}
       {/* Input Row - Floating Glass Pill */}
@@ -445,6 +477,17 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+            </svg>
+          </button>
+
+          {/* Emoji Button */}
+          <button
+            onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+            className={`p-2 rounded-full transition-all flex-shrink-0 ${showEmojiPicker ? 'text-primary bg-primary/10' : 'text-slate-400 hover:text-primary hover:bg-primary/5'}`}
+            title="Add emoji"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
 
