@@ -5,7 +5,7 @@ import axios from "axios";
 import { API_BASE } from "../api";
 import EmojiPicker from "emoji-picker-react";
 
-export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, members = [], prefillMessage }) {
+export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, members = [], prefillMessage, onOpenTask }) {
   const { user } = useAuth();
   const [val, setVal] = useState("");
 
@@ -25,6 +25,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
   const [showPicker, setShowPicker] = useState(false); // ✅ New State
   const [showMentions, setShowMentions] = useState(false); // ✅ New State
   const [showEmojiPicker, setShowEmojiPicker] = useState(false); // ✅ Emoji Picker State
+  const [showAttachMenu, setShowAttachMenu] = useState(false); // ✅ Attachment Menu State
   const [mentionQuery, setMentionQuery] = useState("");
   const [mentionIndex, setMentionIndex] = useState(0);
 
@@ -268,16 +269,19 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
     }
   };
 
-  // ✅ Close emoji picker when clicking outside
+  // ✅ Close emoji picker and attachment menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (showEmojiPicker && !e.target.closest('.emoji-picker-container')) {
         setShowEmojiPicker(false);
       }
+      if (showAttachMenu && !e.target.closest('.attach-menu-container')) {
+        setShowAttachMenu(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showEmojiPicker]);
+  }, [showEmojiPicker, showAttachMenu]);
 
   return (
     <div className="pt-2 relative">
@@ -470,15 +474,98 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
       {!recording && (
         <div className="flex items-end gap-1.5 p-1 bg-white rounded-[2rem] shadow-float border border-white/60 backdrop-blur-xl relative z-20">
 
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="p-2 rounded-full text-slate-400 hover:text-primary hover:bg-primary/5 transition-all flex-shrink-0"
-            title="Attach file"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
-            </svg>
-          </button>
+          {/* Plus Icon Attachment Menu */}
+          <div className="relative attach-menu-container">
+            <button
+              onClick={() => setShowAttachMenu(!showAttachMenu)}
+              disabled={uploading}
+              className={`p-2 rounded-full transition-all flex-shrink-0 disabled:opacity-50 ${showAttachMenu ? 'text-primary bg-primary/10' : 'text-slate-400 hover:text-primary hover:bg-primary/5'
+                }`}
+              title="Attach"
+            >
+              {uploading ? (
+                <svg className="w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />
+                </svg>
+              )}
+            </button>
+
+            {/* Attachment Menu Dropdown */}
+            {showAttachMenu && (
+              <div className="absolute bottom-full left-0 mb-2 w-48 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl z-50 py-1.5 animate-premium-in overflow-hidden">
+                {/* Photos */}
+                <button
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                    fileInputRef.current?.setAttribute('accept', 'image/*');
+                    setShowAttachMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-green-50 transition-colors flex items-center gap-3 group"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <span>Photos</span>
+                </button>
+
+                {/* Videos */}
+                <button
+                  onClick={() => {
+                    fileInputRef.current?.click();
+                    fileInputRef.current?.setAttribute('accept', 'video/*');
+                    setShowAttachMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-purple-50 transition-colors flex items-center gap-3 group"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
+                    <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <span>Videos</span>
+                </button>
+
+                {/* Task */}
+                <button
+                  onClick={() => {
+                    onOpenTask?.();
+                    setShowAttachMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-blue-50 transition-colors flex items-center gap-3 group"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-blue-100 flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <span>Task</span>
+                </button>
+
+                {/* Schedule Message */}
+                <button
+                  onClick={() => {
+                    setShowPicker(true);
+                    setShowAttachMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-amber-50 transition-colors flex items-center gap-3 group"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-amber-100 flex items-center justify-center group-hover:bg-amber-200 transition-colors">
+                    <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <span>Schedule</span>
+                </button>
+              </div>
+            )}
+          </div>
 
           {/* Emoji Button */}
           <button
@@ -490,18 +577,6 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </button>
-
-          {!val.trim() && attachments.length === 0 && (
-            <button
-              onClick={() => setShowPicker(!showPicker)}
-              className={`p-2 rounded-full transition-all flex-shrink-0 ${scheduledAt ? 'text-blue-600 bg-blue-50' : 'text-slate-400 hover:text-primary hover:bg-primary/5'}`}
-              title="Schedule message"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </button>
-          )}
 
           <input
             ref={fileInputRef}

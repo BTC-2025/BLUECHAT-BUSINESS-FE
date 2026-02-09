@@ -54,32 +54,49 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4">
-            <div className="bg-[#0f172a] w-full max-w-md rounded-2xl border border-white/10 shadow-2xl overflow-hidden animate-fade-in">
-                <div className="p-5 border-b border-white/10 flex justify-between items-center bg-white/5">
-                    <h2 className="text-lg font-bold text-white">Assign Task</h2>
-                    <button onClick={onClose} className="text-white/50 hover:text-white transition-colors">✕</button>
+        <div className="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+            <div className="bg-white w-full max-w-lg rounded-2xl border border-slate-200 shadow-2xl overflow-hidden animate-fade-in">
+                {/* Header */}
+                <div className="p-5 border-b border-slate-200 flex justify-between items-center bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                            </svg>
+                        </div>
+                        <h2 className="text-lg font-bold text-slate-800">Assign Task</h2>
+                    </div>
+                    <button
+                        onClick={onClose}
+                        className="text-slate-400 hover:text-slate-600 transition-colors p-1 hover:bg-slate-100 rounded-lg"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-5 space-y-4">
+                <form onSubmit={handleSubmit} className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                    {/* Task Title */}
                     <div>
-                        <label className="block text-xs font-semibold text-white/50 mb-1.5 uppercase tracking-wider">Task Title</label>
+                        <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Task Title</label>
                         <input
                             type="text"
                             required
                             value={title}
                             onChange={(e) => setTitle(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-primary transition-colors"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                             placeholder="e.g. Update client presentation"
                         />
                     </div>
 
+                    {/* Description */}
                     <div>
-                        <label className="block text-xs font-semibold text-white/50 mb-1.5 uppercase tracking-wider">Description (Optional)</label>
+                        <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Description (Optional)</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
-                            className="w-full bg-black/20 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-primary transition-colors min-h-[100px] resize-none"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all min-h-[100px] resize-none"
                             placeholder="Add details..."
                         />
                     </div>
@@ -87,44 +104,44 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                     {/* Assignees Selection (Only for Groups) */}
                     {chat.isGroup && (
                         <div>
-                            <label className="block text-xs font-semibold text-white/50 mb-1.5 uppercase tracking-wider">Assign To</label>
+                            <label className="block text-xs font-bold text-slate-600 mb-2 uppercase tracking-wider">Assign To</label>
                             <div className="space-y-2">
-                                <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <label className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all">
                                     <input
                                         type="radio"
                                         checked={assignAll}
                                         onChange={() => setAssignAll(true)}
-                                        className="accent-primary w-4 h-4"
+                                        className="accent-blue-600 w-4 h-4"
                                     />
-                                    <span className="text-sm font-medium text-white">All Participants</span>
+                                    <span className="text-sm font-semibold text-slate-700">All Participants</span>
                                 </label>
 
-                                <label className="flex items-center gap-3 p-3 rounded-xl bg-white/5 cursor-pointer hover:bg-white/10 transition-colors">
+                                <label className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 cursor-pointer hover:bg-blue-50 hover:border-blue-200 transition-all">
                                     <input
                                         type="radio"
                                         checked={!assignAll}
                                         onChange={() => setAssignAll(false)}
-                                        className="accent-primary w-4 h-4"
+                                        className="accent-blue-600 w-4 h-4"
                                     />
-                                    <span className="text-sm font-medium text-white">Select Specific People</span>
+                                    <span className="text-sm font-semibold text-slate-700">Select Specific People</span>
                                 </label>
                             </div>
 
                             {!assignAll && (
-                                <div className="mt-2 max-h-40 overflow-y-auto space-y-1 pr-1 custom-scrollbar">
+                                <div className="mt-3 max-h-48 overflow-y-auto space-y-2 p-3 bg-slate-50 rounded-xl border border-slate-200">
                                     {assignableUsers.map(u => (
-                                        <label key={u._id || u.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-white/5 cursor-pointer transition-colors">
+                                        <label key={u._id || u.id} className="flex items-center gap-3 p-2.5 rounded-lg hover:bg-white cursor-pointer transition-all border border-transparent hover:border-blue-200">
                                             <input
                                                 type="checkbox"
                                                 checked={selectedAssignees.includes(u._id || u.id)}
                                                 onChange={() => toggleAssignee(u._id || u.id)}
-                                                className="accent-primary w-4 h-4 rounded"
+                                                className="accent-blue-600 w-4 h-4 rounded"
                                             />
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-secondary to-secondary-dark text-[10px] grid place-items-center font-bold text-white uppercase">
+                                            <div className="flex items-center gap-2.5">
+                                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 text-xs grid place-items-center font-bold text-white uppercase">
                                                     {u.avatar ? <img src={u.avatar} alt="" className="w-full h-full object-cover rounded-full" /> : (u.full_name?.[0] || u.phone?.slice(-2))}
                                                 </div>
-                                                <span className="text-sm text-white/90">{u.full_name || u.phone}</span>
+                                                <span className="text-sm text-slate-700 font-medium">{u.full_name || u.phone}</span>
                                             </div>
                                         </label>
                                     ))}
@@ -133,34 +150,33 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                         </div>
                     )}
 
-
-
-                    {/* Private Task Toggle (Only for Groups, when not assigning to all - logic adjustable) */}
+                    {/* Private Task Toggle */}
                     {chat.isGroup && (
-                        <div className="flex items-center gap-2 mt-4 p-2 rounded-lg hover:bg-white/5 transition-colors">
+                        <div className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 border border-amber-200">
                             <input
                                 type="checkbox"
                                 id="privateDetails"
                                 checked={isPrivate}
                                 onChange={(e) => setIsPrivate(e.target.checked)}
-                                className="accent-primary w-4 h-4 rounded cursor-pointer"
+                                className="accent-blue-600 w-4 h-4 rounded cursor-pointer mt-0.5"
                             />
                             <div className="flex flex-col">
-                                <label htmlFor="privateDetails" className="text-sm font-medium text-white cursor-pointer selection:bg-none">
+                                <label htmlFor="privateDetails" className="text-sm font-bold text-slate-700 cursor-pointer">
                                     Private Task
                                 </label>
-                                <span className="text-[10px] text-white/50">
-                                    Only assigned members + you can see this task
+                                <span className="text-xs text-slate-600 leading-relaxed">
+                                    Only assigned members and you can see this task
                                 </span>
                             </div>
                         </div>
                     )}
 
+                    {/* Submit Button */}
                     <div className="pt-2">
                         <button
                             type="submit"
                             disabled={loading || (!assignAll && selectedAssignees.length === 0)}
-                            className="w-full bg-gradient-to-r from-primary to-primary-light hover:brightness-110 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
+                            className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2"
                         >
                             {loading ? (
                                 <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -175,7 +191,7 @@ export default function TaskModal({ isOpen, onClose, chat, onTaskCreated }) {
                         </button>
                     </div>
                 </form>
-            </div >
-        </div >
+            </div>
+        </div>
     );
 }

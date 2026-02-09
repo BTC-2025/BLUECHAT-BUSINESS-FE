@@ -871,6 +871,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
             onCancelReply={() => setReplyTo(null)}
             members={chat.members}
             prefillMessage={prefillMessage}
+            onOpenTask={() => setOpenTaskModal(true)}
           />
         )}
       </div>
