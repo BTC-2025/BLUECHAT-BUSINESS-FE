@@ -780,7 +780,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   };
 
   return (
-    <div className="flex flex-col-reverse md:flex-row h-full overflow-hidden bg-white/50 backdrop-blur-3xl rounded-3xl shadow-float border border-white/50 relative z-10">
+    <div className="flex flex-col-reverse md:flex-row h-full overflow-hidden bg-white/50 backdrop-blur-3xl shadow-float border border-white/50 relative z-10">
       <NavRail
         activeTab={activeTab}
         onTabChange={(id) => {

@@ -447,7 +447,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
   };
 
   return (
-    <div className="flex flex-col h-full bg-white/70 backdrop-blur-3xl rounded-3xl shadow-float border border-white/60 relative overflow-hidden z-10 m-0 md:m-0">
+    <div className="flex flex-col h-full bg-white/70 backdrop-blur-3xl shadow-float border border-white/60 relative overflow-hidden z-10 m-0 md:m-0">
 
       {/* ✅ HEADER with glassmorphism */}
       <div className="px-5 py-4 bg-white/40 backdrop-blur-md border-b border-white/40 shadow-sm flex justify-between items-center gap-3 min-h-[72px] transition-all z-20">
@@ -848,32 +848,34 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       </div>
 
       {/* ✅ Input */}
-      <div className="border-t border-background-dark p-1 sm:p-1 bg-white">
-        {blockStatus.isBlocked || chat.other?.isReportedByMe || chat.other?.hasReportedMe ? (
-          <div className="text-center text-primary/50 py-1 text-sm italic">
-            {chat.other?.isReportedByMe
-              ? "You have reported this user. Communication is disabled."
-              : chat.other?.hasReportedMe
-                ? "You have been reported by this user. Communication is disabled."
-                : blockStatus.iBlockedThem
-                  ? "Unblock this user to send messages"
-                  : "You cannot send messages to this user"}
-          </div>
-        ) : (chat.isAnnouncementGroup && !chat.admins?.includes(user.id)) ? (
-          <div className="text-center text-primary/50 py-2 text-sm italic bg-gray-50 rounded-lg">
-            Only admins can send messages in this group.
-          </div>
-        ) : (
-          <ChatInput
-            onSend={send}
-            chatId={chat.id}
-            replyTo={replyTo}
-            onCancelReply={() => setReplyTo(null)}
-            members={chat.members}
-            prefillMessage={prefillMessage}
-            onOpenTask={() => setOpenTaskModal(true)}
-          />
-        )}
+      <div className="bg-background">
+        <div className="border-t border-background-dark p-2 sm:p-3 bg-white rounded-b-[60px]">
+          {blockStatus.isBlocked || chat.other?.isReportedByMe || chat.other?.hasReportedMe ? (
+            <div className="text-center text-primary/50 py-1 text-sm italic">
+              {chat.other?.isReportedByMe
+                ? "You have reported this user. Communication is disabled."
+                : chat.other?.hasReportedMe
+                  ? "You have been reported by this user. Communication is disabled."
+                  : blockStatus.iBlockedThem
+                    ? "Unblock this user to send messages"
+                    : "You cannot send messages to this user"}
+            </div>
+          ) : (chat.isAnnouncementGroup && !chat.admins?.includes(user.id)) ? (
+            <div className="text-center text-primary/50 py-2 text-sm italic bg-gray-50 rounded-lg">
+              Only admins can send messages in this group.
+            </div>
+          ) : (
+            <ChatInput
+              onSend={send}
+              chatId={chat.id}
+              replyTo={replyTo}
+              onCancelReply={() => setReplyTo(null)}
+              members={chat.members}
+              prefillMessage={prefillMessage}
+              onOpenTask={() => setOpenTaskModal(true)}
+            />
+          )}
+        </div>
       </div>
 
       {/* ✅ Group Manage Modal */}
