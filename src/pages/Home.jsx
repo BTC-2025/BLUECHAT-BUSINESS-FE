@@ -4,7 +4,7 @@ import ChatWindow from "../components/ChatWindow.js";
 import CallModal from "../components/CallModal.js";
 import StatusPage from "./StatusPage.js";
 import DashboardContent from "../components/DashboardContent"; // ✅ Business
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext.js";
 import logo from "../assets/Blue-Chat.jpeg";
