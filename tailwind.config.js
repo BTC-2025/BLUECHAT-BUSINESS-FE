@@ -48,6 +48,7 @@ module.exports = {
         'premium': '0 20px 40px -15px rgba(25, 91, 172, 0.15), 0 0 2px rgba(0,0,0,0.05)',
         'card': '0 2px 10px rgba(0, 0, 0, 0.03)',
         'input': '0 2px 5px rgba(0,0,0,0.02)',
+        'float': '0 20px 40px -10px rgba(0, 0, 0, 0.2)',
       },
       borderRadius: {
         '3xl': '1.5rem',

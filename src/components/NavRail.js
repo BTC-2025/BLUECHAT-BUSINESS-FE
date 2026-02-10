@@ -33,7 +33,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
                         key={tab.id}
                         onClick={() => tab.id === 'ai-assistant' ? alert('AI Assistant coming soon!') : onTabChange(tab.id)}
                         className={`
-                            w-8 h-8 md:w-12 md:h-12 
+                            w-8 h-8 md:w-10 md:h-10 
                             rounded-2xl flex items-center justify-center 
                             transition-all duration-300 group relative 
                             ${tab.isAI
@@ -103,7 +103,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
                             )}
                         </span>
                         {!tab.isAI && activeTab === tab.id && (
-                            <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-8 bg-primary rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(25,91,172,0.5)]" />
+                            <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-6 bg-primary rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(25,91,172,0.5)]" />
                         )}
                     </button>
                 ))}
@@ -113,7 +113,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
             <button
                 onClick={() => onTabChange('settings')}
                 className={`
-                    w-12 h-12 md:w-12 md:h-12 
+                    w-12 h-12 md:w-10 md:h-10 
                     rounded-2xl flex items-center justify-center 
                     transition-all duration-300 group relative 
                     md:mb-3
@@ -129,14 +129,14 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {activeTab === 'settings' && (
-                    <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-8 bg-primary rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(25,91,172,0.5)]" />
+                    <div className="absolute left-0 md:left-0 bottom-0 md:bottom-auto w-full md:w-1 h-1 md:h-6 bg-primary rounded-t-full md:rounded-r-full shadow-[0_0_10px_rgba(25,91,172,0.5)]" />
                 )}
             </button>
 
             {/* Profile Avatar (Bottom/End) */}
             <button
                 onClick={onOpenProfile}
-                className="mb-4 w-10 h-10 md:w-12 md:h-12 rounded-2xl overflow-hidden border-2 border-white/50 hover:border-primary transition-all duration-300 ring-2 ring-white/0 hover:ring-primary/20 shadow-md"
+                className="mb-4 w-10 h-10 md:w-10 md:h-10 rounded-2xl overflow-hidden border-2 border-white/50 hover:border-primary transition-all duration-300 ring-2 ring-white/0 hover:ring-primary/20 shadow-md"
             >
                 {user?.avatar ? (
                     <img src={user.avatar} alt="Profile" className="w-full h-full object-cover" />

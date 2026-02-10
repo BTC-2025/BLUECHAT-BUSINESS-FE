@@ -106,7 +106,18 @@ export default function ChatListItem({ item, active, onClick, userId }) {
                 </div>
 
                 <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest flex-shrink-0">
-                  {item.lastAt ? dayjs(item.lastAt).fromNow(true) : ""}
+                  {(() => {
+                    const dateStr = !item.isGroup && item.other?.lastSeen
+                      ? item.other.lastSeen
+                      : (item.lastAt || item.updatedAt || item.createdAt);
+
+                    if (!dateStr) return "";
+                    const date = dayjs(dateStr);
+                    const now = dayjs();
+                    if (date.isSame(now, 'day')) return date.format('h:mm A');
+                    if (date.isSame(now.subtract(1, 'day'), 'day')) return 'Yesterday';
+                    return date.format('DD/MM/YYYY');
+                  })()}
                 </span>
               </div>
 

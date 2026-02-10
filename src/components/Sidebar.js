@@ -32,6 +32,18 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
   const [notifSettings, setNotifSettings] = useState(() =>
     JSON.parse(localStorage.getItem("notificationSettings") || '{"sound":true,"push":true}')
   );
+  const [showMenu, setShowMenu] = useState(false);
+  const [chatFilter, setChatFilter] = useState('all'); // ✅ Filter State
+
+  const handleMarkAllRead = () => {
+    setChats((prev) => prev.map((c) => ({ ...c, unread: 0 })));
+    chats.forEach(chat => {
+      if (chat.unread > 0) {
+        socket.emit("message:readAll", { chatId: chat.id });
+      }
+    });
+    setShowMenu(false);
+  };
 
   // ✅ Social Tab State
   const [socialView, setSocialView] = useState('apps'); // 'apps' | 'contacts'
@@ -251,10 +263,6 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
 
   const sortChats = (chatList, userId) => {
     return [...chatList].sort((a, b) => {
-      // 1. Self-chat always at the absolute top
-      if (a.isSelfChat && !b.isSelfChat) return -1;
-      if (!a.isSelfChat && b.isSelfChat) return 1;
-
       // 2. Pinned chats next
       const aIsPinned = a.isPinned || a.pinnedBy?.includes(userId);
       const bIsPinned = b.isPinned || b.pinnedBy?.includes(userId);
@@ -266,7 +274,9 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       if (!a.other?.isFavorite && b.other?.isFavorite) return 1;
 
       // 4. Newest first
-      return new Date(b.lastAt) - new Date(a.lastAt);
+      const dateA = new Date(a.lastAt || a.updatedAt || a.createdAt);
+      const dateB = new Date(b.lastAt || b.updatedAt || b.createdAt);
+      return dateB - dateA;
     });
   };
 
@@ -280,32 +290,29 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       }
       return false; // In 'apps' view, we don't show chats directly
     }
-    if (activeTab === "chats") return !c.isGroup && !c.isArchived && c.origin !== 'ecommerce'; // ✅ Exclude Social
+
+    // ✅ Main Chats Tab with Filters
+    if (activeTab === "chats") {
+      const baseMatches = !c.isArchived && c.origin !== 'ecommerce';
+      if (!baseMatches) return false;
+
+      if (chatFilter === 'unread') return c.unread > 0;
+      if (chatFilter === 'groups') return c.isGroup;
+      if (chatFilter === 'favorites') return c.other?.isFavorite;
+      return true;
+    }
+
     if (activeTab === "archived") return c.isArchived;
     return true; // fallback for others
   });
 
-  // ✅ Always ensure "Me" (self-chat) is visible at top of "chats" tab if not already there
+  // ✅ "Me" chat removed as requested
   let displayChats = filteredChats;
-  if (activeTab === "chats") {
-    const hasSelf = chats.some(c => c.isSelfChat);
-    if (!hasSelf) {
-      // Create a synthetic "Me" chat if it doesn't exist yet
-      displayChats = [{
-        id: "me-shortcut",
-        title: "Me",
-        isSelfChat: true,
-        lastMessage: "Message yourself to save notes/links",
-        unread: 0,
-        isSynthetic: true
-      }, ...filteredChats];
-    }
-  }
 
   const renderContent = () => {
     if (activeTab === "settings") {
       return (
-        <div className="flex-1 p-6 space-y-6">
+        <div className="flex-1 p-6 space-y-6 overflow-y-auto custom-scrollbar">
           <h2 className="text-2xl font-bold mb-4">Settings</h2>
           <div className="space-y-4">
             <button
@@ -695,7 +702,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               )}
               <h2 className="text-2xl font-black text-slate-900">{activeTab === 'social' ? (socialView === 'contacts' ? selectedApp?.name : 'Social Apps') : getTitle()}</h2>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 items-center">
               {activeTab === 'groups' && (
                 <>
                   <button
@@ -710,9 +717,59 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
                   </button>
                 </>
               )}
+
+              {/* Three Dot Menu */}
+              <div className="relative z-50">
+                <button
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors text-slate-600"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
+                </button>
+
+                {showMenu && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-100 shadow-xl rounded-2xl overflow-hidden py-1 animate-slide-up origin-top-right">
+                    <button onClick={() => { setOpenCreate(true); setShowMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
+                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                      New Group
+                    </button>
+                    <button onClick={() => { setOpenCommunityCreate(true); setShowMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
+                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                      New Community
+                    </button>
+                    <button onClick={() => { setActiveTab('settings'); setShowMenu(false); onOpenChat(null); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
+                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                      Settings
+                    </button>
+                    <div className="h-px bg-slate-100 my-1" />
+                    <button onClick={handleMarkAllRead} className="w-full text-left px-4 py-3 hover:bg-primary/5 text-sm font-medium flex items-center gap-3 text-primary transition-colors">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                      Mark all as read
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <SearchBar onOpen={async (chat) => { onOpenChat(chat); await load(); }} />
+
+          {/* ✅ Filter Chips */}
+          {activeTab === 'chats' && (
+            <div className="flex gap-2 overflow-x-auto no-scrollbar mt-3 pb-1">
+              {['all', 'unread', 'groups', 'favorites'].map(f => (
+                <button
+                  key={f}
+                  onClick={() => setChatFilter(f)}
+                  className={`px-3 py-1 rounded-full text-xs font-bold transition-all whitespace-nowrap ${chatFilter === f
+                    ? "bg-primary text-white shadow-md"
+                    : "bg-slate-100/50 text-slate-500 hover:bg-white hover:text-slate-800 border border-transparent hover:border-slate-200"
+                    }`}
+                >
+                  {f.charAt(0).toUpperCase() + f.slice(1)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* List Container */}
@@ -775,7 +832,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
             />
           )}
         </div>
-      </div>
+      </div >
     );
   };
 
@@ -790,6 +847,9 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
             onViewMyBusiness?.();
           } else {
             setActiveTab(id);
+            if (id === 'settings') {
+              onOpenChat(null);
+            }
           }
         }}
         onOpenProfile={() => setOpenProfile(true)}

@@ -3,17 +3,30 @@ import axios from 'axios';
 import { API_BASE } from '../api';
 import ShoppingCartModal from './ShoppingCartModal';
 
-export default function ContactInfoModal({ contact, open, onClose, onProductInquiry }) {
-    const [activeTab, setActiveTab] = useState('info'); // 'info' or 'products'
+export default function ContactInfoModal({
+    contact,
+    open,
+    onClose,
+    onProductInquiry,
+    chatId,
+    blockStatus,
+    onBlock,
+    onUnblock,
+    onReport,
+    onClearChat,
+    onArchiveChat,
+    isArchived
+}) {
+    const [activeTab, setActiveTab] = useState('info'); // 'info', 'products', 'media', 'docs', 'links'
     const [business, setBusiness] = useState(null);
     const [products, setProducts] = useState([]);
+    const [sharedContent, setSharedContent] = useState({ media: [], docs: [], links: [] });
     const [loading, setLoading] = useState(false);
+    const [loadingMedia, setLoadingMedia] = useState(false);
 
     // Shopping cart state
     const [cart, setCart] = useState([]);
     const [showCart, setShowCart] = useState(false);
-
-
 
     const loadBusinessData = useCallback(async () => {
         setLoading(true);
@@ -24,13 +37,68 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
             ]);
             setBusiness(businessRes.data);
             setProducts(productsRes.data);
-            // Default to products tab if business, or keep user choice? Let's stick to info first.
         } catch (error) {
             console.error('Load business error:', error);
         } finally {
             setLoading(false);
         }
-    }, [contact]);
+    }, [contact?.id]);
+
+    const loadSharedContent = useCallback(async () => {
+        if (!chatId) return;
+        setLoadingMedia(true);
+        try {
+            const { data: messages } = await axios.get(`${API_BASE}/messages/${chatId}`);
+
+            const media = [];
+            const docs = [];
+            const links = [];
+            const linkRegex = /(https?:\/\/[^\s]+)/g;
+
+            messages.forEach(msg => {
+                // Filter Attachments
+                if (msg.attachments?.length > 0) {
+                    msg.attachments.forEach(att => {
+                        console.log("Processing attachment:", att, "Type:", att.type);
+
+                        // ✅ Fallback type detection
+                        let type = att.type;
+                        if (!type && att.url) {
+                            const ext = att.url.split('.').pop().toLowerCase();
+                            if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'heic'].includes(ext)) type = 'image';
+                            else if (['mp4', 'mov', 'webm', 'avi', 'mkv'].includes(ext)) type = 'video';
+                            else if (['mp3', 'wav', 'ogg', 'm4a'].includes(ext)) type = 'audio';
+                            else type = 'file';
+                        }
+
+                        if (type === 'image' || type === 'video') {
+                            media.push({ ...att, msgId: msg._id, createdAt: msg.createdAt });
+                        } else if (type !== 'audio') { // Exclude voice notes from docs
+                            docs.push({ ...att, msgId: msg._id, createdAt: msg.createdAt });
+                        }
+                    });
+                }
+
+                // Extract Links
+                const foundLinks = msg.body?.match(linkRegex);
+                if (foundLinks) {
+                    foundLinks.forEach(link => {
+                        links.push({ url: link, msgId: msg._id, createdAt: msg.createdAt });
+                    });
+                }
+            });
+
+            setSharedContent({
+                media: media.reverse(),
+                docs: docs.reverse(),
+                links: links.reverse()
+            });
+        } catch (error) {
+            console.error("Failed to load shared content", error);
+        } finally {
+            setLoadingMedia(false);
+        }
+    }, [chatId]);
 
     // Cart handlers
     const addToCart = (product) => {
@@ -75,20 +143,33 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
 
     useEffect(() => {
         if (open) {
-            console.log('ContactInfoModal Open:', { contact, isBusiness: contact?.isBusiness });
-        }
-        if (open && contact?.isBusiness) {
-            loadBusinessData();
+            if (contact?.isBusiness) {
+                loadBusinessData();
+            }
+            loadSharedContent();
         } else {
-            // Reset for non-business or closure
+            // Reset
             setBusiness(null);
             setProducts([]);
             setActiveTab('info');
-            setCart([]); // Clear cart when closing modal
+            setCart([]);
+            setSharedContent({ media: [], docs: [], links: [] });
         }
-    }, [open, contact, loadBusinessData]);
+    }, [open, contact, loadBusinessData, loadSharedContent]);
 
     if (!open || !contact) return null;
+
+    const TabButton = ({ id, label, count }) => (
+        <button
+            onClick={() => setActiveTab(id)}
+            className={`py-3 px-4 font-bold border-b-2 transition-colors whitespace-nowrap ${activeTab === id
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-400 hover:text-gray-600'
+                }`}
+        >
+            {label} {count !== undefined && <span className="text-xs opacity-70 ml-1">({count})</span>}
+        </button>
+    );
 
     return (
         <div
@@ -159,31 +240,28 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
                     </div>
                 )}
 
-                {/* Tabs for Business Accounts */}
-                {contact.isBusiness && business && (
-                    <div className="px-6 mt-4 border-b border-gray-100 flex gap-6 shrink-0">
-                        <button
-                            onClick={() => setActiveTab('info')}
-                            className={`py-3 font-bold border-b-2 transition-colors ${activeTab === 'info' ? 'border-primary text-primary' : 'border-transparent text-gray-400 hover:text-gray-600'
-                                }`}
-                        >
-                            About Business
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('products')}
-                            className={`py-3 font-bold border-b-2 transition-colors ${activeTab === 'products' ? 'border-primary text-primary' : 'border-transparent text-gray-400 hover:text-gray-600'
-                                }`}
-                        >
-                            Products ({products.length})
-                        </button>
-                    </div>
-                )}
+                {/* Navigation Tabs */}
+                <div className="px-6 mt-4 border-b border-gray-100 flex gap-2 shrink-0 overflow-x-auto hide-scrollbar">
+                    <TabButton id="info" label={contact.isBusiness ? "Business Info" : "Info"} />
+                    {contact.isBusiness && business && (
+                        <TabButton id="products" label="Products" count={products.length} />
+                    )}
+                    <TabButton id="media" label="Media" count={sharedContent.media.length} />
+                    <TabButton id="docs" label="Docs" count={sharedContent.docs.length} />
+                    <TabButton id="links" label="Links" count={sharedContent.links.length} />
+                </div>
 
                 {/* Scrollable Content */}
-                <div className="p-6 overflow-y-auto">
+                <div className="p-6 overflow-y-auto min-h-[300px]">
                     {activeTab === 'info' && (
-                        <div className="space-y-5">
-                            {/* Standard User Info (Show if NOT business OR if business data failed to load) */}
+                        <div className="space-y-6">
+                            {/* Loading State */}
+                            {loading && (
+                                <div className="flex justify-center p-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                </div>
+                            )}
+                            {/* Standard User Info */}
                             {(!contact.isBusiness || !business) && (
                                 <>
                                     <div className="bg-background rounded-xl p-4 border border-background-dark/50">
@@ -235,9 +313,68 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
                                     )}
                                 </>
                             )}
-                            {contact.isBusiness && loading && (
-                                <div className="py-8 text-center text-gray-500">Loading business details...</div>
-                            )}
+
+                            {/* Actions Section */}
+                            <div className="pt-6 border-t border-gray-100">
+                                <h3 className="text-xs font-black uppercase text-gray-400 mb-4 tracking-wider">Actions</h3>
+                                <div className="space-y-2">
+                                    <button
+                                        onClick={onClearChat}
+                                        className="w-full p-4 flex items-center gap-4 hover:bg-gray-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 group-hover:text-gray-800 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </div>
+                                        <span className="font-semibold text-gray-700">Clear all messages</span>
+                                    </button>
+
+                                    <button
+                                        onClick={onArchiveChat}
+                                        className="w-full p-4 flex items-center gap-4 hover:bg-gray-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 group-hover:bg-gray-200 group-hover:text-gray-800 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                                            </svg>
+                                        </div>
+                                        <span className="font-semibold text-gray-700">
+                                            {isArchived ? "Unarchive user" : "Archive user"}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        onClick={blockStatus?.isBlocked ? onUnblock : onBlock}
+                                        className="w-full p-4 flex items-center gap-4 hover:bg-red-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${blockStatus?.isBlocked
+                                            ? "bg-red-100 text-red-600 group-hover:bg-red-200"
+                                            : "bg-gray-100 text-gray-600 group-hover:bg-gray-200"
+                                            }`}
+                                        >
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                            </svg>
+                                        </div>
+                                        <span className={`font-semibold ${blockStatus?.isBlocked ? "text-red-600" : "text-gray-700 group-hover:text-red-600"}`}>
+                                            {blockStatus?.isBlocked ? "Unblock User" : "Block User"}
+                                        </span>
+                                    </button>
+
+                                    <button
+                                        onClick={onReport}
+                                        className="w-full p-4 flex items-center gap-4 hover:bg-orange-50 rounded-xl transition-colors text-left group"
+                                    >
+                                        <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 group-hover:bg-orange-200 transition-colors">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                            </svg>
+                                        </div>
+                                        <span className="font-semibold text-orange-600">Report User</span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     )}
 
@@ -250,41 +387,166 @@ export default function ContactInfoModal({ contact, open, onClose, onProductInqu
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                    {products.map(product => (
-                                        <div key={product._id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
-                                            <div className="mb-2">
-                                                <div className="flex justify-between items-start mb-1">
-                                                    <h4 className="font-bold text-gray-900 line-clamp-1" title={product.name}>{product.name}</h4>
-                                                    {product.inStock ?
-                                                        <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 ml-2">Stock</span> :
-                                                        <span className="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full shrink-0 ml-2">Out</span>
-                                                    }
+                                    {products.map(product => {
+                                        const cartItem = cart.find(item => item._id === product._id);
+                                        const inCart = !!cartItem;
+                                        const cartQuantity = cartItem?.quantity || 0;
+
+                                        return (
+                                            <div key={product._id} className="bg-white border border-gray-100 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                                                <div className="mb-2">
+                                                    <div className="flex justify-between items-start mb-1">
+                                                        <h4 className="font-bold text-gray-900 line-clamp-1" title={product.name}>{product.name}</h4>
+                                                        {product.inStock ?
+                                                            <span className="text-[10px] font-bold bg-green-100 text-green-700 px-2 py-0.5 rounded-full shrink-0 ml-2">Stock</span> :
+                                                            <span className="text-[10px] font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full shrink-0 ml-2">Out</span>
+                                                        }
+                                                    </div>
+                                                    <p className="text-primary font-black text-lg">
+                                                        {product.currency === 'INR' ? '₹' : product.currency} {product.price}
+                                                    </p>
                                                 </div>
-                                                <p className="text-primary font-black text-lg">
-                                                    {product.currency === 'INR' ? '₹' : product.currency} {product.price}
-                                                </p>
+
+                                                {product.description && (
+                                                    <p className="text-gray-500 text-xs line-clamp-2 mb-4 flex-1">{product.description}</p>
+                                                )}
+
+                                                <button
+                                                    onClick={() => addToCart(product)}
+                                                    disabled={!product.inStock}
+                                                    className={`w-full py-2 rounded-lg font-bold text-sm transition-colors mt-auto flex items-center justify-center gap-2 ${!product.inStock
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : inCart
+                                                            ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                            : 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
+                                                        }`}
+                                                >
+                                                    {!product.inStock ? (
+                                                        <><span>🛒</span> Out of Stock</>
+                                                    ) : inCart ? (
+                                                        <><span>✓</span> In Cart ({cartQuantity})</>
+                                                    ) : (
+                                                        <><span>🛒</span> Add to Cart</>
+                                                    )}
+                                                </button>
                                             </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                    )}
 
-                                            {product.description && (
-                                                <p className="text-gray-500 text-xs line-clamp-2 mb-4 flex-1">{product.description}</p>
+                    {activeTab === 'media' && (
+                        <div className="space-y-4">
+                            {loadingMedia ? (
+                                <div className="flex justify-center p-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                </div>
+                            ) : sharedContent.media.length === 0 ? (
+                                <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-4xl mb-3 opacity-50">🖼️</div>
+                                    <p className="text-gray-500 font-medium">No shared media</p>
+                                </div>
+                            ) : (
+                                <div className="grid grid-cols-3 gap-2">
+                                    {sharedContent.media.map((item, i) => (
+                                        <div key={i} className="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200 relative group cursor-pointer">
+                                            {item.type === 'video' ? (
+                                                <video src={item.url} className="w-full h-full object-cover" />
+                                            ) : (
+                                                <img src={item.url} alt="" className="w-full h-full object-cover" />
                                             )}
-
-                                            <button
-                                                onClick={() => addToCart(product)}
-                                                disabled={!product.inStock}
-                                                className={`w-full py-2 rounded-lg font-bold text-sm transition-colors mt-auto flex items-center justify-center gap-2 ${product.inStock
-                                                        ? 'bg-primary/10 text-primary hover:bg-primary hover:text-white'
-                                                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                    }`}
-                                            >
-                                                <span>🛒</span> {product.inStock ? 'Add to Cart' : 'Out of Stock'}
-                                            </button>
+                                            {item.type === 'video' && (
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                                                    <svg className="w-8 h-8 text-white opacity-80" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M8 5v14l11-7z" />
+                                                    </svg>
+                                                </div>
+                                            )}
                                         </div>
                                     ))}
                                 </div>
                             )}
                         </div>
                     )}
+
+                    {activeTab === 'docs' && (
+                        <div className="space-y-2">
+                            {loadingMedia ? (
+                                <div className="flex justify-center p-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                </div>
+                            ) : sharedContent.docs.length === 0 ? (
+                                <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-4xl mb-3 opacity-50">📄</div>
+                                    <p className="text-gray-500 font-medium">No shared documents</p>
+                                </div>
+                            ) : (
+                                sharedContent.docs.map((doc, i) => (
+                                    <a
+                                        key={i}
+                                        href={doc.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="flex items-center gap-4 p-4 bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-100 transition-colors group"
+                                    >
+                                        <div className="w-10 h-10 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center shrink-0">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <div className="min-w-0 flex-1">
+                                            <div className="font-semibold text-gray-800 truncate group-hover:text-primary transition-colors">
+                                                {doc.name || "Untitled Document"}
+                                            </div>
+                                            <div className="text-xs text-gray-400">
+                                                {new Date(doc.createdAt).toLocaleDateString()}
+                                            </div>
+                                        </div>
+                                        <div className="text-gray-400 group-hover:text-primary">
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                            </svg>
+                                        </div>
+                                    </a>
+                                ))
+                            )}
+                        </div>
+                    )}
+
+                    {activeTab === 'links' && (
+                        <div className="space-y-4">
+                            {loadingMedia ? (
+                                <div className="flex justify-center p-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                </div>
+                            ) : sharedContent.links.length === 0 ? (
+                                <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                                    <div className="text-4xl mb-3 opacity-50">🔗</div>
+                                    <p className="text-gray-500 font-medium">No shared links</p>
+                                </div>
+                            ) : (
+                                sharedContent.links.map((link, i) => (
+                                    <a
+                                        key={i}
+                                        href={link.url}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="block p-4 bg-gray-50 hover:bg-blue-50/50 rounded-xl border border-gray-100 transition-colors group"
+                                    >
+                                        <div className="text-blue-600 font-medium truncate mb-1 group-hover:underline">
+                                            {link.url}
+                                        </div>
+                                        <div className="text-xs text-gray-400">
+                                            Sent {new Date(link.createdAt).toLocaleDateString()}
+                                        </div>
+                                    </a>
+                                ))
+                            )}
+                        </div>
+                    )}
+
                 </div>
 
                 {/* Footer Actions (Only for non-business or simple Close) */}

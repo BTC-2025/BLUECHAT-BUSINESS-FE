@@ -160,44 +160,39 @@ export default function StatusPage({ onBack }) {
     );
 
     return (
-        <div className="h-full w-full bg-slate-950 flex relative overflow-hidden select-none">
+        <div className="h-full w-full bg-[#e9f4ff] flex relative overflow-hidden select-none">
             {/* Background Layer (Blurred) */}
-            {currentStatus ? (
+            {currentStatus && (
                 <div
-                    className="absolute inset-0 opacity-40 blur-3xl scale-110 pointer-events-none transition-all duration-1000"
+                    className="absolute inset-0 opacity-20 blur-[100px] scale-125 pointer-events-none transition-all duration-1000"
                     style={{ backgroundImage: `url(${currentStatus.content})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
                 />
-            ) : (
-                <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-950 to-black pointer-events-none" />
             )}
 
             {/* LEFT SIDEBAR - Responsive: Hidden on mobile when viewing status */}
-            <div className={`w-full md:w-[400px] flex flex-col bg-slate-900/60 backdrop-blur-3xl border-r border-white/5 z-50 overflow-hidden ${selectedGroupIdx !== null ? 'hidden md:flex' : 'flex'}`}>
+            <div className={`w-full md:w-[400px] flex flex-col bg-white/80 backdrop-blur-3xl border-r border-slate-200 z-50 overflow-hidden ${selectedGroupIdx !== null ? 'hidden md:flex' : 'flex'}`}>
                 {/* Header */}
-                <div className="p-6 border-b border-white/5 flex items-center justify-between sticky top-0 bg-slate-900/20 backdrop-blur-xl z-20">
+                <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white/50 backdrop-blur-xl z-20">
                     <div>
-                        <h2 className="text-white font-black text-2xl tracking-tight">Stories</h2>
-                        <p className="text-white/40 text-xs font-medium mt-0.5">Share your moments</p>
+                        <h2 className="text-slate-800 font-black text-2xl tracking-tight">Stories</h2>
+                        <p className="text-slate-500 text-xs font-medium mt-0.5">Share your moments</p>
                     </div>
-                    <button onClick={onBack} title="Back to Chats" className="w-10 h-10 flex items-center justify-center hover:bg-white/10 rounded-full transition-all text-white/70 hover:text-white hover:scale-110 active:scale-95">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
                     {/* MY STATUS SECTION */}
                     <div>
-                        <div className="px-2 py-2 text-white/30 text-[10px] uppercase font-black tracking-[0.2em] mb-1">My Story</div>
-                        <div className="flex items-center gap-4 p-4 rounded-3xl transition-all bg-gradient-to-br from-white/5 to-white/0 border border-white/5 hover:border-white/10 group cursor-pointer relative overflow-hidden">
-                            <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                        <div className="px-2 py-2 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] mb-1">My Story</div>
+                        <div className="flex items-center gap-4 p-4 rounded-3xl transition-all bg-gradient-to-br from-white to-slate-50 hover:shadow-md border border-slate-200/60 group cursor-pointer relative overflow-hidden">
+                            <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
                             <div className="relative z-10" onClick={() => fileInputRef.current?.click()}>
-                                <div className={`w-14 h-14 rounded-full p-[2px] ${myGroup ? 'bg-gradient-to-tr from-primary to-blue-400' : 'bg-white/10'}`}>
-                                    <div className="w-full h-full rounded-full border-2 border-slate-900 overflow-hidden bg-slate-800">
-                                        {user?.avatar ? <img src={user.avatar} alt={user.full_name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" /> : <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">{user?.full_name?.[0]}</div>}
+                                <div className={`w-14 h-14 rounded-full p-[2px] ${myGroup ? 'bg-gradient-to-tr from-primary to-blue-400' : 'bg-slate-200'}`}>
+                                    <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-slate-100">
+                                        {user?.avatar ? <img src={user.avatar} alt={user.full_name} className="w-full h-full object-cover transition-transform group-hover:scale-110 duration-500" /> : <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-lg">{user?.full_name?.[0]}</div>}
                                     </div>
                                 </div>
-                                {!myGroup && <div className="absolute bottom-0 right-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-white border-2 border-slate-900 text-sm font-bold shadow-lg">+</div>}
+                                {!myGroup && <div className="absolute bottom-0 right-0 w-5 h-5 bg-primary rounded-full flex items-center justify-center text-white border-2 border-white text-sm font-bold shadow-lg">+</div>}
                             </div>
 
                             <div className="flex-1 flex items-center justify-between z-10">
@@ -209,10 +204,10 @@ export default function StatusPage({ onBack }) {
                                         fileInputRef.current?.click();
                                     }
                                 }}>
-                                    <div className="text-white font-bold text-base group-hover:text-primary transition-colors">My Status</div>
-                                    <div className="text-white/40 text-xs font-medium mt-0.5">{myGroup ? `${myGroup.statuses.length} updates` : 'Touch to add update'}</div>
+                                    <div className="text-slate-800 font-bold text-base group-hover:text-primary transition-colors">My Status</div>
+                                    <div className="text-slate-500 text-xs font-medium mt-0.5">{myGroup ? `${myGroup.statuses.length} updates` : 'Touch to add update'}</div>
                                 </div>
-                                <button onClick={() => fileInputRef.current?.click()} className="p-3 text-white/40 hover:text-white hover:bg-white/10 rounded-xl transition-all">
+                                <button onClick={() => fileInputRef.current?.click()} className="p-3 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                                 </button>
                             </div>
@@ -222,7 +217,7 @@ export default function StatusPage({ onBack }) {
                     {/* RECENT UPDATES SECTION */}
                     {otherGroups.length > 0 && (
                         <div>
-                            <div className="px-2 py-2 text-white/30 text-[10px] uppercase font-black tracking-[0.2em] mb-1">Recent Updates</div>
+                            <div className="px-2 py-2 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] mb-1">Recent Updates</div>
                             <div className="space-y-1">
                                 {otherGroups.map((g) => {
                                     const globalIdx = statusGroups.findIndex(sg => sg.user._id === g.user._id);
@@ -232,21 +227,21 @@ export default function StatusPage({ onBack }) {
                                         <div
                                             key={g.user._id}
                                             onClick={() => { setSelectedGroupIdx(globalIdx); setCurrentStatusIdx(0); }}
-                                            className={`flex items-center gap-4 p-4 rounded-3xl cursor-pointer transition-all duration-300 group ${globalIdx === selectedGroupIdx ? 'bg-white/10 shadow-lg border border-white/10' : 'hover:bg-white/5 border border-transparent'}`}
+                                            className={`flex items-center gap-4 p-4 rounded-3xl cursor-pointer transition-all duration-300 group ${globalIdx === selectedGroupIdx ? 'bg-primary/10 shadow-sm border border-primary/20' : 'hover:bg-white/60 hover:shadow-sm border border-transparent'}`}
                                         >
-                                            <div className={`w-14 h-14 rounded-full p-[2px] transition-all duration-500 relative ${hasUnviewed ? 'bg-gradient-to-tr from-[#0088cc] via-[#36a3ff] to-[#0088cc] animate-gradient-xy shadow-[0_0_20px_rgba(0,136,204,0.3)]' : 'bg-white/10'}`}>
-                                                <div className="w-full h-full rounded-full border-2 border-slate-900 overflow-hidden bg-slate-800 relative z-10">
-                                                    {g.user.avatar ? <img src={g.user.avatar} alt={g.user.full_name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-white font-bold text-lg">{g.user.full_name?.[0]}</div>}
+                                            <div className={`w-14 h-14 rounded-full p-[2px] transition-all duration-500 relative ${hasUnviewed ? 'bg-gradient-to-tr from-[#0088cc] via-[#36a3ff] to-[#0088cc] animate-gradient-xy shadow-[0_0_20px_rgba(0,136,204,0.3)]' : 'bg-slate-200'}`}>
+                                                <div className="w-full h-full rounded-full border-2 border-white overflow-hidden bg-slate-100 relative z-10">
+                                                    {g.user.avatar ? <img src={g.user.avatar} alt={g.user.full_name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" /> : <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-lg">{g.user.full_name?.[0]}</div>}
                                                 </div>
                                             </div>
                                             <div className="flex-1 overflow-hidden">
-                                                <div className={`text-white font-bold text-base truncate transition-colors ${hasUnviewed ? 'text-white' : 'text-white/60 group-hover:text-white/90'}`}>{g.user.full_name}</div>
-                                                <div className="text-white/30 text-xs font-medium truncate mt-0.5 flex items-center gap-1.5">
+                                                <div className={`text-slate-800 font-bold text-base truncate transition-colors ${hasUnviewed ? 'text-slate-900' : 'text-slate-600 group-hover:text-primary'}`}>{g.user.full_name}</div>
+                                                <div className="text-slate-500 text-xs font-medium truncate mt-0.5 flex items-center gap-1.5">
                                                     <span>{new Date(g.statuses[0].createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                                     {hasUnviewed && <span className="w-1.5 h-1.5 rounded-full bg-primary shadow-glow-sm"></span>}
                                                 </div>
                                             </div>
-                                            <svg className={`w-5 h-5 text-white/20 group-hover:text-white/60 transition-all transform ${globalIdx === selectedGroupIdx ? 'translate-x-0' : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} /></svg>
+                                            <svg className={`w-5 h-5 text-slate-300 group-hover:text-slate-500 transition-all transform ${globalIdx === selectedGroupIdx ? 'translate-x-0 text-primary' : '-translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} /></svg>
                                         </div>
                                     );
                                 })}
@@ -401,24 +396,24 @@ export default function StatusPage({ onBack }) {
                         </div>
                     </>
                 ) : (
-                    // PREMIUM LANDING VIEW 
-                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-black/20 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 via-transparent to-blue-500/5 animate-pulse-slow pointer-events-none" />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/20 blur-[120px] rounded-full pointer-events-none opacity-20" />
+                    // PREMIUM LANDING VIEW - UPDATED FOR LIGHT THEME
+                    <div className="flex-1 flex flex-col items-center justify-center text-center p-8 bg-[#e9f4ff] relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 via-transparent to-blue-500/5 animate-pulse-slow pointer-events-none" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/10 blur-[120px] rounded-full pointer-events-none opacity-20" />
 
                         <div className="relative z-10 flex flex-col items-center max-w-md mx-auto">
-                            <div className="w-32 h-32 bg-gradient-to-tr from-white/10 to-white/0 rounded-[2rem] flex items-center justify-center backdrop-blur-lg border border-white/10 mb-10 shadow-[0_0_50px_rgba(0,0,0,0.5)] transform hover:scale-105 transition-transform duration-500 hover:rotate-3">
-                                <svg className="w-16 h-16 text-primary drop-shadow-[0_0_15px_rgba(0,136,204,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            <div className="w-32 h-32 bg-gradient-to-tr from-white to-white/80 rounded-[2rem] flex items-center justify-center backdrop-blur-lg border border-slate-200 mb-10 shadow-xl transform hover:scale-105 transition-transform duration-500 hover:rotate-3">
+                                <svg className="w-16 h-16 text-primary drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             </div>
-                            <h3 className="text-white text-5xl font-black tracking-tight mb-4 drop-shadow-lg">Stories</h3>
-                            <p className="text-white/60 text-lg leading-relaxed mb-12 font-medium">
+                            <h3 className="text-slate-800 text-5xl font-black tracking-tight mb-4 drop-shadow-sm">Stories</h3>
+                            <p className="text-slate-500 text-lg leading-relaxed mb-12 font-medium">
                                 Share the moments that matter with the people you care about.
                             </p>
 
                             <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto">
                                 <button
                                     onClick={() => fileInputRef.current?.click()}
-                                    className="px-8 py-5 bg-gradient-to-r from-primary to-blue-500 text-white font-bold rounded-2xl hover:shadow-[0_0_30px_rgba(0,136,204,0.5)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 group border border-white/10"
+                                    className="px-8 py-5 bg-gradient-to-r from-primary to-blue-500 text-white font-bold rounded-2xl hover:shadow-[0_0_30px_rgba(0,136,204,0.3)] transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-3 group border border-transparent"
                                 >
                                     <span className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center group-hover:rotate-90 transition-transform">
                                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" /></svg>
@@ -426,7 +421,7 @@ export default function StatusPage({ onBack }) {
                                     Add your Story
                                 </button>
                                 {statusGroups.length === 0 && (
-                                    <button onClick={onBack} className="px-8 py-5 bg-white/5 text-white/70 hover:text-white font-bold rounded-2xl hover:bg-white/10 transition-all border border-white/5 hover:border-white/20 flex items-center justify-center gap-2">
+                                    <button onClick={onBack} className="px-8 py-5 bg-white text-slate-500 hover:text-slate-800 font-bold rounded-2xl hover:bg-slate-50 transition-all border border-slate-200 hover:border-slate-300 flex items-center justify-center gap-2">
                                         Go Back
                                     </button>
                                 )}
@@ -445,9 +440,9 @@ export default function StatusPage({ onBack }) {
             />
 
             {uploading && (
-                <div className="absolute inset-0 bg-black/90 z-[200] flex flex-col items-center justify-center backdrop-blur-2xl animate-fade-in">
-                    <div className="w-20 h-20 border-4 border-primary/30 border-t-primary animate-spin rounded-full mb-8 shadow-[0_0_40px_rgba(0,136,204,0.4)]" />
-                    <span className="text-white font-black tracking-[0.2em] text-sm uppercase animate-pulse">Sharing Moment...</span>
+                <div className="absolute inset-0 bg-slate-900/50 z-[200] flex flex-col items-center justify-center backdrop-blur-sm animate-fade-in">
+                    <div className="w-20 h-20 border-4 border-white/30 border-t-white animate-spin rounded-full mb-8 shadow-lg" />
+                    <span className="text-white font-black tracking-[0.2em] text-sm uppercase animate-pulse drop-shadow-md">Sharing Moment...</span>
                 </div>
             )}
         </div>

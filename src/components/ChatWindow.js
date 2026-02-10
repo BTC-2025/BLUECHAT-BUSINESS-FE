@@ -558,30 +558,6 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
               {!chat.isGroup && !chat.isSelfChat && (
                 <>
-                  {/* Favorite Toggle Button */}
-                  <button
-                    onClick={async () => {
-                      try {
-                        const { data } = await axios.post(`${API_BASE}/users/favorites/toggle`, { targetId: chat.other.id }, {
-                          headers: { Authorization: `Bearer ${user?.token}` }
-                        });
-                        if (data.success) {
-                          chat.other.isFavorite = data.isFavorite; // Update local state
-                          window.dispatchEvent(new CustomEvent("chats:refresh")); // Refresh sidebar
-                        }
-                      } catch (e) { console.error("Toggle favorite failed", e); }
-                    }}
-                    className={`p-2 rounded-xl transition-all duration-200 ring-1 ${chat.other?.isFavorite
-                      ? "bg-yellow-500/20 text-yellow-600 ring-yellow-500/30 shadow-[0_0_10px_rgba(250,204,21,0.2)]"
-                      : "bg-white/40 text-slate-400 hover:text-yellow-500 hover:bg-white/60 ring-black/5"
-                      }`}
-                    title={chat.other?.isFavorite ? "Remove from favorites" : "Add to favorites"}
-                  >
-                    <svg className="w-5 h-5" fill={chat.other?.isFavorite ? "currentColor" : "none"} stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.382-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                    </svg>
-                  </button>
-
                   {/* Audio Call Button */}
                   <button
                     onClick={() => onStartCall?.("audio")}
@@ -603,18 +579,6 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                     </svg>
                   </button>
                 </>
-              )}
-
-              {!chat.isGroup && !chat.isSelfChat && (
-                <button
-                  onClick={blockStatus.iBlockedThem ? handleUnblock : handleBlock}
-                  className={`text-xs px-3 py-2 rounded-xl transition-all duration-200 font-semibold ring-1 ${blockStatus.iBlockedThem
-                    ? "bg-green-100 text-green-700 hover:bg-green-200 ring-green-200"
-                    : "bg-red-50 text-red-600 hover:bg-red-100 ring-red-100"
-                    }`}
-                >
-                  {blockStatus.iBlockedThem ? "Unblock" : "Block"}
-                </button>
               )}
 
               {/* Three-dot Menu */}
@@ -848,34 +812,32 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
       </div>
 
       {/* ✅ Input */}
-      <div className="bg-background">
-        <div className="border-t border-background-dark p-2 sm:p-3 bg-white rounded-b-[60px]">
-          {blockStatus.isBlocked || chat.other?.isReportedByMe || chat.other?.hasReportedMe ? (
-            <div className="text-center text-primary/50 py-1 text-sm italic">
-              {chat.other?.isReportedByMe
-                ? "You have reported this user. Communication is disabled."
-                : chat.other?.hasReportedMe
-                  ? "You have been reported by this user. Communication is disabled."
-                  : blockStatus.iBlockedThem
-                    ? "Unblock this user to send messages"
-                    : "You cannot send messages to this user"}
-            </div>
-          ) : (chat.isAnnouncementGroup && !chat.admins?.includes(user.id)) ? (
-            <div className="text-center text-primary/50 py-2 text-sm italic bg-gray-50 rounded-lg">
-              Only admins can send messages in this group.
-            </div>
-          ) : (
-            <ChatInput
-              onSend={send}
-              chatId={chat.id}
-              replyTo={replyTo}
-              onCancelReply={() => setReplyTo(null)}
-              members={chat.members}
-              prefillMessage={prefillMessage}
-              onOpenTask={() => setOpenTaskModal(true)}
-            />
-          )}
-        </div>
+      <div className="p-2 sm:p-3 mx-3 mb-2">
+        {blockStatus.isBlocked || chat.other?.isReportedByMe || chat.other?.hasReportedMe ? (
+          <div className="text-center text-primary/50 py-1 text-sm italic">
+            {chat.other?.isReportedByMe
+              ? "You have reported this user. Communication is disabled."
+              : chat.other?.hasReportedMe
+                ? "You have been reported by this user. Communication is disabled."
+                : blockStatus.iBlockedThem
+                  ? "Unblock this user to send messages"
+                  : "You cannot send messages to this user"}
+          </div>
+        ) : (chat.isAnnouncementGroup && !chat.admins?.includes(user.id)) ? (
+          <div className="text-center text-primary/50 py-2 text-sm italic bg-gray-50 rounded-lg">
+            Only admins can send messages in this group.
+          </div>
+        ) : (
+          <ChatInput
+            onSend={send}
+            chatId={chat.id}
+            replyTo={replyTo}
+            onCancelReply={() => setReplyTo(null)}
+            members={chat.members}
+            prefillMessage={prefillMessage}
+            onOpenTask={() => setOpenTaskModal(true)}
+          />
+        )}
       </div>
 
       {/* ✅ Group Manage Modal */}
@@ -890,7 +852,15 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
         contact={chat.other}
         open={openContactInfo}
         onClose={() => setOpenContactInfo(false)}
-        onProductInquiry={handleProductInquiry} // ✅ Pass handler
+        onProductInquiry={handleProductInquiry}
+        chatId={chat.id}
+        blockStatus={blockStatus}
+        onBlock={handleBlock}
+        onUnblock={handleUnblock}
+        onReport={handleReportUser}
+        onClearChat={handleClearChat}
+        onArchiveChat={handleArchive}
+        isArchived={chat.isArchived}
       />
 
       {/* ✅ Forward Modal */}
