@@ -290,7 +290,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
         <div className="flex items-center gap-2 p-2 bg-secondary/10 rounded-xl border border-secondary/30">
           <div className="flex-1 min-w-0">
             <div className="text-xs font-semibold text-secondary">
-              Replying to {replyTo.sender?.full_name || replyTo.sender?.phone || "Unknown"}
+              Replying to {replyTo.sender?._id === user?.id || replyTo.sender === user?.id ? "You" : (replyTo.sender?.full_name || replyTo.sender?.phone || "Unknown")}
             </div>
             <div className="text-sm text-primary/70 truncate">
               {replyTo.body || "[attachment]"}

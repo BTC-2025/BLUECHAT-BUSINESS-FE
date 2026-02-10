@@ -27,7 +27,7 @@ export default function NavRail({ activeTab, onTabChange, onOpenProfile }) {
             fixed bottom-0 md:relative
         ">
             {/* Navigation Icons */}
-            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-1 w-full pt-4">
+            <div className="flex-1 flex flex-row items-center md:flex-col justify-around md:justify-start md:gap-2 w-full pt-4">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}

@@ -57,6 +57,12 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
     setMenuOpen(false);
   };
 
+  // ✅ Handle Reply with Decrypted Text
+  const handleReply = () => {
+    onReply?.({ ...message, body: decryptedBody || message.body });
+    setMenuOpen(false);
+  };
+
   const renderTicks = () => {
     if (isDeleted) return null;
     if (!mine) return null;
@@ -149,7 +155,10 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
   };
 
   return (
-    <div className={`flex ${mine ? "justify-end" : "justify-start"}`}>
+    <div
+      className={`flex ${mine ? "justify-end" : "justify-start"}`}
+      onDoubleClick={handleReply}
+    >
       {/* ✅ Chat Bubble with modern styling - fits content */}
       <div
         className={`relative inline-block rounded-3xl px-5 py-3 animate-fade-in max-w-[75%] ${mine
@@ -192,10 +201,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
               {/* Reply button */}
               <button
                 className="block w-full text-left px-2 py-1 hover:bg-slate-50 rounded text-slate-700"
-                onClick={() => {
-                  onReply?.(message);
-                  setMenuOpen(false);
-                }}
+                onClick={handleReply}
               >
                 ↪️ Reply
               </button>
