@@ -20,7 +20,25 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
   const [openContactInfo, setOpenContactInfo] = useState(false); // ✅ Added state
   const [openTaskModal, setOpenTaskModal] = useState(false); // ✅ Task Modal State
   const [showMenu, setShowMenu] = useState(false);
-  // ✅ Added state
+  const menuRef = useRef(null);
+
+  // ✅ Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false);
+      }
+    };
+
+    if (showMenu) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showMenu]);
+
 
   // ✅ Reply/Forward state
   const [replyTo, setReplyTo] = useState(null);
@@ -451,89 +469,93 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
       {/* ✅ HEADER with glassmorphism */}
       <div className="px-5 py-4 bg-white/40 backdrop-blur-md border-b border-white/40 shadow-sm flex justify-between items-center gap-3 min-h-[72px] transition-all z-20">
-        {showSearch ? (
-          <div className="flex-1 flex items-center gap-3 animate-premium-in">
-            <div className="relative flex-1">
-              <input
-                autoFocus
-                type="text"
-                placeholder="Search messages..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full glass-input border-white/40 text-slate-800 placeholder-slate-400 px-10 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-inner"
-              />
-              <svg className="w-4 h-4 text-white/50 absolute left-3.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-            </div>
+
+        {/* LEFT - Back button + Name (ALWAYS VISIBLE) */}
+        <div
+          className={`flex items-center gap-3 min-w-0 ${!chat.isGroup ? "cursor-pointer group/header" : ""} ${showSearch ? "hidden sm:flex" : "flex"}`}
+          onClick={() => !chat.isGroup && setOpenContactInfo(true)}
+        >
+          {/* Back button (mobile only) */}
+          {onBack && (
             <button
-              onClick={() => { setShowSearch(false); setSearchQuery(""); }}
-              className="text-slate-500 hover:text-slate-800 text-sm font-bold px-2"
+              onClick={onBack}
+              className="md:hidden p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-600"
             >
-              Cancel
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
+              </svg>
             </button>
+          )}
+
+          {/* Avatar with gradient and online indicator */}
+          <div className="relative">
+            <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full grid place-items-center text-sm font-bold flex-shrink-0 text-white shadow-md overflow-hidden ${chat.isGroup
+              ? "bg-gradient-to-br from-secondary-dark to-secondary"
+              : "bg-gradient-to-br from-secondary to-secondary-light"
+              }`}>
+              {(chat.isGroup ? chat.avatar : chat.other?.avatar) ? (
+                <img src={chat.isGroup ? chat.avatar : chat.other.avatar} alt="" className="w-full h-full object-cover group-hover/header:scale-110 transition-transform" />
+              ) : chat.isGroup
+                ? (chat.title?.[0] || "G")
+                : (chat.other?.full_name?.[0] || chat.other?.phone?.slice(-2))}
+            </div>
+            {/* Online indicator */}
+            {!chat.isGroup && !chat.isSelfChat && presence.isOnline && (
+              <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-primary animate-pulse" />
+            )}
           </div>
-        ) : (
-          <>
-            {/* LEFT - Back button + Name */}
-            <div
-              className={`flex items-center gap-3 min-w-0 ${!chat.isGroup ? "cursor-pointer group/header" : ""}`}
-              onClick={() => !chat.isGroup && setOpenContactInfo(true)}
-            >
-              {/* Back button (mobile only) */}
-              {onBack && (
-                <button
-                  onClick={onBack}
-                  className="md:hidden p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-600"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-              )}
 
-              {/* Avatar with gradient and online indicator */}
-              <div className="relative">
-                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full grid place-items-center text-sm font-bold flex-shrink-0 text-white shadow-md overflow-hidden ${chat.isGroup
-                  ? "bg-gradient-to-br from-secondary-dark to-secondary"
-                  : "bg-gradient-to-br from-secondary to-secondary-light"
-                  }`}>
-                  {(chat.isGroup ? chat.avatar : chat.other?.avatar) ? (
-                    <img src={chat.isGroup ? chat.avatar : chat.other.avatar} alt="" className="w-full h-full object-cover group-hover/header:scale-110 transition-transform" />
-                  ) : chat.isGroup
-                    ? (chat.title?.[0] || "G")
-                    : (chat.other?.full_name?.[0] || chat.other?.phone?.slice(-2))}
-                </div>
-                {/* Online indicator */}
-                {!chat.isGroup && !chat.isSelfChat && presence.isOnline && (
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-primary animate-pulse" />
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <div className="font-bold text-sm sm:text-base truncate text-slate-800 group-hover/header:text-primary transition-colors">
-                  {chat.title}
-                </div>
-
-                <div className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1">
-                  {chat.isGroup
-                    ? "Group"
-                    : typing
-                      ? <span className="animate-pulse-soft">Typing...</span>
-                      : chat.isSelfChat
-                        ? "Notes & Links"
-                        : presence.isOnline
-                          ? "Online"
-                          : chat.other?.lastSeen
-                            ? `last seen ${new Date(chat.other.lastSeen).toLocaleTimeString()}`
-                            : ""
-                  }
-                </div>
-              </div>
+          <div className={`min-w-0 ${showSearch ? "hidden md:block" : "block"}`}>
+            <div className="font-bold text-sm sm:text-base truncate text-slate-800 group-hover/header:text-primary transition-colors">
+              {chat.title}
             </div>
 
-            {/* RIGHT - Action buttons */}
-            <div className="flex items-center gap-2">
+            <div className="text-[10px] sm:text-xs text-slate-500 font-medium flex items-center gap-1">
+              {chat.isGroup
+                ? "Group"
+                : typing
+                  ? <span className="animate-pulse-soft">Typing...</span>
+                  : chat.isSelfChat
+                    ? "Notes & Links"
+                    : presence.isOnline
+                      ? "Online"
+                      : chat.other?.lastSeen
+                        ? `last seen ${new Date(chat.other.lastSeen).toLocaleTimeString()}`
+                        : ""
+              }
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT - Actions OR Search */}
+        <div className="flex-1 flex justify-end items-center gap-2 min-w-0">
+          {showSearch ? (
+            <div className="flex-1 flex items-center gap-2 max-w-md ml-auto animate-premium-in">
+              <div className="relative flex-1">
+                <input
+                  autoFocus
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full glass-input border-white/40 text-slate-800 placeholder-slate-400 pl-9 pr-4 py-2 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-inner"
+                />
+                <svg className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <button
+                onClick={() => { setShowSearch(false); setSearchQuery(""); }}
+                className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
+                title="Close search"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+          ) : (
+            <>
               <button
                 onClick={() => setShowSearch(true)}
                 className="p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-400 hover:text-primary"
@@ -582,7 +604,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
               )}
 
               {/* Three-dot Menu */}
-              <div className="relative">
+              <div className="relative" ref={menuRef}>
                 <button
                   onClick={() => setShowMenu(!showMenu)}
                   className="p-2 hover:bg-white/40 rounded-xl transition-all duration-200 text-slate-400 hover:text-primary"
@@ -595,7 +617,6 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
 
                 {showMenu && (
                   <>
-                    <div className="fixed inset-0 z-[1000]" onClick={() => setShowMenu(false)} />
                     <div className="absolute right-0 top-12 w-48 glass-card bg-white/95 backdrop-blur-xl border border-slate-100 rounded-2xl shadow-2xl z-[1010] py-2 animate-premium-in">
                       <button
                         onClick={async () => {
@@ -676,7 +697,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                       </button>
 
                       {/* ✅ Assign Task Button */}
-                      <button
+                      {/* <button
                         onClick={() => { setShowMenu(false); setOpenTaskModal(true); }}
                         className="w-full px-4 py-3 text-left text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors flex items-center gap-3"
                       >
@@ -684,7 +705,7 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                         </svg>
                         Assign Task
-                      </button>
+                      </button> */}
                     </div>
                   </>
                 )}
@@ -702,9 +723,9 @@ export default function ChatWindow({ chat, onBack, onStartCall }) {
                   </svg>
                 </button>
               )}
-            </div>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
       {/* ✅ Block Status Banners */}

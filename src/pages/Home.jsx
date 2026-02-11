@@ -4,6 +4,7 @@ import ChatWindow from "../components/ChatWindow.js";
 import CallModal from "../components/CallModal.js";
 import StatusPage from "./StatusPage.js";
 import DashboardContent from "../components/DashboardContent"; // ✅ Business
+import AIChatWindow from "../components/AIChatWindow";
 import { useState, useEffect } from "react";
 import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext.js";
@@ -220,7 +221,7 @@ export default function Home() {
             h-full overflow-hidden border-r border-background-dark
             flex-col relative
             flex-shrink-0
-            w-full md:w-[420px]
+            w-full md:w-[480px]
           `}
         >
           <Sidebar
@@ -239,12 +240,16 @@ export default function Home() {
           flex-col flex-1 min-w-0
         `}>
           {activeChat ? (
-            <ChatWindow
-              key={activeChat?.id + reloadKey}
-              chat={activeChat}
-              onBack={handleBack}
-              onStartCall={handleStartCall}
-            />
+            activeChat.isAI ? (
+              <AIChatWindow onBack={handleBack} />
+            ) : (
+              <ChatWindow
+                key={activeChat?.id + reloadKey}
+                chat={activeChat}
+                onBack={handleBack}
+                onStartCall={handleStartCall}
+              />
+            )
           ) : (
             <div className="h-full grid place-items-center text-primary/60 p-4 text-center bg-background">
               <div>

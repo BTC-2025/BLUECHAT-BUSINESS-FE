@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import dayjs from "dayjs";
 import { socket } from "../socket";
 import { useAuth } from "../context/AuthContext";
@@ -9,6 +9,25 @@ const REACTION_EMOJIS = ["👍", "❤️", "😂", "😮", "😢", "🙏"];
 export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply, onForward }) {
   const { user, privateKey } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  // ✅ Handle click outside to close menu
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+
+    if (menuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [menuOpen]);
+
   const [lightboxImage, setLightboxImage] = useState(null);
   const [decryptedBody, setDecryptedBody] = useState(null);
   const [decryptionFailed, setDecryptionFailed] = useState(false);
@@ -169,7 +188,7 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
           }`}
       >
         {/* ⋮ Menu - inside the bubble */}
-        <div className="absolute top-1 right-1 z-50">
+        <div className="absolute top-1 right-1 z-[100]" ref={menuRef}>
           <button
             className={`text-lg leading-none p-1 rounded transition-colors ${mine
               ? "text-white/50 hover:text-white hover:bg-white/10"
@@ -397,9 +416,6 @@ export default function MessageBubble({ message, mine, isGroup, isAdmin, onReply
         {/* ✅ Ticks + Time */}
         <div className={`text-[10px] text-right mt-1.5 flex gap-1.5 items-center justify-end font-medium ${mine ? "text-white/60" : "text-slate-400"
           }`}>
-          {message.encryptedBody && (
-            <span title="End-to-end encrypted" className="opacity-70">🔒</span>
-          )}
           <span>{dayjs(message.createdAt).format("HH:mm")}</span>
           {renderTicks()}
         </div>

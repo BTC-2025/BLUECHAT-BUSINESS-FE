@@ -491,7 +491,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
             <button
               onClick={() => setShowAttachMenu(!showAttachMenu)}
               disabled={uploading}
-              className={`p-3 rounded-full transition-all duration-200 disabled:opacity-50 ${showAttachMenu ? 'bg-primary/20 text-primary' : 'hover:bg-gray-100 text-slate-500 hover:text-primary'
+              className={`p-3 rounded-full transition-all duration-200 disabled:opacity-50 flex items-center justify-center ${showAttachMenu ? 'bg-primary/20 text-primary' : 'hover:bg-gray-100 text-slate-500 hover:text-primary'
                 }`}
               title="Attach"
             >
@@ -510,38 +510,37 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
             {/* Attachment Menu Dropdown */}
             {showAttachMenu && (
               <div className="absolute bottom-full left-0 mb-2 w-48 bg-white/95 backdrop-blur-xl border border-slate-200/60 rounded-2xl shadow-2xl z-50 py-1.5 animate-premium-in overflow-hidden">
-                {/* Photos */}
+                {/* Photos & Videos */}
                 <button
                   onClick={() => {
                     fileInputRef.current?.click();
-                    fileInputRef.current?.setAttribute('accept', 'image/*');
-                    setShowAttachMenu(false);
-                  }}
-                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-green-50 transition-colors flex items-center gap-3 group"
-                >
-                  <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
-                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                  </div>
-                  <span>Photos</span>
-                </button>
-
-                {/* Videos */}
-                <button
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                    fileInputRef.current?.setAttribute('accept', 'video/*');
+                    fileInputRef.current?.setAttribute('accept', 'image/*,video/*');
                     setShowAttachMenu(false);
                   }}
                   className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-purple-50 transition-colors flex items-center gap-3 group"
                 >
                   <div className="w-8 h-8 rounded-xl bg-purple-100 flex items-center justify-center group-hover:bg-purple-200 transition-colors">
                     <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
                   </div>
-                  <span>Videos</span>
+                  <span>Photos & Videos</span>
+                </button>
+
+                {/* Contact */}
+                <button
+                  onClick={() => {
+                    alert('Contact sharing coming soon');
+                    setShowAttachMenu(false);
+                  }}
+                  className="w-full px-4 py-2.5 text-left text-sm font-semibold text-slate-700 hover:bg-green-50 transition-colors flex items-center gap-3 group"
+                >
+                  <div className="w-8 h-8 rounded-xl bg-green-100 flex items-center justify-center group-hover:bg-green-200 transition-colors">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <span>Contact</span>
                 </button>
 
                 {/* Document */}
@@ -599,7 +598,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
           {/* Emoji Button */}
           <button
             onClick={() => setShowEmojiPicker(!showEmojiPicker)}
-            className={`p-3 rounded-full transition-all duration-200 ${showEmojiPicker ? 'bg-primary/20 text-primary' : 'hover:bg-gray-100 text-slate-500 hover:text-primary'}`}
+            className={`p-3 rounded-full transition-all duration-200 flex items-center justify-center ${showEmojiPicker ? 'bg-primary/20 text-primary' : 'hover:bg-gray-100 text-slate-500 hover:text-primary'}`}
             title="Add emoji"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -632,7 +631,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
             <button
               onClick={startRecording}
               disabled={uploading}
-              className="p-3 rounded-full hover:bg-gray-100 transition-all duration-200 disabled:opacity-50 text-slate-500 hover:text-secondary"
+              className="p-3 rounded-full hover:bg-gray-100 transition-all duration-200 disabled:opacity-50 text-slate-500 hover:text-secondary flex items-center justify-center"
               title="Record voice message"
             >
               <svg className="w-5 h-5 text-secondary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -643,7 +642,7 @@ export default function ChatInput({ onSend, chatId, replyTo, onCancelReply, memb
             <button
               onClick={submit}
               disabled={(!val.trim() && attachments.length === 0) || uploading}
-              className={`p-3 rounded-full bg-gradient-to-r ${scheduledAt ? 'from-blue-600 to-blue-400' : 'from-primary to-primary-light'} hover:brightness-110 transition-all duration-200 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed`}
+              className={`p-3 rounded-full bg-gradient-to-r ${scheduledAt ? 'from-blue-600 to-blue-400' : 'from-primary to-primary-light'} hover:brightness-110 transition-all duration-200 text-white shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center`}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 {scheduledAt ? (

@@ -38,7 +38,7 @@ export default function ChatListItem({ item, active, onClick, userId }) {
 
   // Check if chat is pinned for this user
   const isPinned = item.isPinned || item.pinnedBy?.includes(userId);
-  const isOnline = !item.isGroup && item.other?.isOnline;
+  const isOnline = !item.isGroup && !item.isSelfChat && item.other?.isOnline;
 
   const handleAvatarClick = (e) => {
     e.stopPropagation();
