@@ -16,6 +16,7 @@ import CommunityCreateModal from "./CommunityCreateModal"; // ✅ Community
 import CommunityManageModal from "./CommunityManageModal"; // ✅ Community
 import NumberSearchSection from "./NumberSearchSection"; // ✅ New Search Section
 import CreateContactSection from "./CreateContactSection"; // ✅ New Contact Section
+import NewChatSection from "./NewChatSection"; // ✅ New Chat Section
 import NavRail from "./NavRail";
 import { requestNotificationPermission, unsubscribeFromNotifications } from "../utils/notificationHelper";
 
@@ -359,7 +360,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       return (
         <div className="flex-1 flex flex-col h-full bg-[#f8fafc]">
           <NumberSearchSection
-            onBack={() => setSidebarView('default')}
+            onBack={() => setSidebarView('new-chat')}
             onOpenChat={(chat) => {
               setChats(prev => {
                 const exists = prev.find(c => c.id === chat.id);
@@ -377,7 +378,7 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
       return (
         <div className="flex-1 flex flex-col h-full bg-[#f8fafc]">
           <CreateContactSection
-            onBack={() => setSidebarView('default')}
+            onBack={() => setSidebarView('new-chat')}
             onOpenChat={(chat) => {
               setChats(prev => {
                 const exists = prev.find(c => c.id === chat.id);
@@ -387,6 +388,21 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               onOpenChat(chat);
               setSidebarView('default');
             }}
+          />
+        </div>
+      );
+    }
+
+    if (sidebarView === 'new-chat') {
+      return (
+        <div className="flex-1 flex flex-col h-full bg-[#f8fafc]">
+          <NewChatSection
+            onBack={() => setSidebarView('default')}
+            onNewGroup={() => { setOpenCreate(true); }}
+            onNewContact={() => setSidebarView('create-contact')}
+            onNewCommunity={() => { setOpenCommunityCreate(true); }}
+            onDialNumber={() => setSidebarView('number-search')}
+            onOpenChat={onOpenChat}
           />
         </div>
       );
@@ -785,32 +801,15 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               <h2 className="text-2xl font-black text-slate-900">{activeTab === 'social' ? (socialView === 'contacts' ? selectedApp?.name : 'Social Apps') : getTitle()}</h2>
             </div>
             <div className="flex gap-2 items-center">
-              {/* Plus Menu */}
-              <div className="relative z-50" ref={plusMenuRef}>
+              {/* Plus Menu - Refactored to Full Page View */}
+              <div className="relative z-50">
                 <button
-                  onClick={() => setShowPlusMenu(!showPlusMenu)}
+                  onClick={() => setSidebarView('new-chat')}
                   className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors text-slate-600 bg-secondary/10 text-secondary"
-                  title="Create New"
+                  title="New Chat"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" /></svg>
                 </button>
-
-                {showPlusMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-100 shadow-xl rounded-2xl overflow-hidden py-1 animate-slide-up origin-top-right">
-                    <button onClick={() => { setSidebarView('create-contact'); setShowPlusMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
-                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
-                      New Contact
-                    </button>
-                    <button onClick={() => { setOpenCreate(true); setShowPlusMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
-                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
-                      New Group
-                    </button>
-                    <button onClick={() => { setSidebarView('number-search'); setShowPlusMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
-                      <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-                      Dial Number
-                    </button>
-                  </div>
-                )}
               </div>
 
               {/* Three Dot Menu */}

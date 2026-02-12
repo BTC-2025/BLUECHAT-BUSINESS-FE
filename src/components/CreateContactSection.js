@@ -15,14 +15,13 @@ export default function CreateContactSection({ onBack, onOpenChat }) {
         setError(null);
 
         try {
-            const { data: users } = await axios.get(`${API_BASE}/users/search?query=${phone}`, {
+            // ✅ Use specific phone search endpoint
+            const { data: foundUser } = await axios.get(`${API_BASE}/users/search/${phone}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
 
-            const foundUser = users.find(u => u.phone === phone || u.username === phone);
-
             if (foundUser) {
-                const { data: chat } = await axios.post(`${API_BASE}/chats`, { userId: foundUser._id }, {
+                const { data: chat } = await axios.post(`${API_BASE}/chats`, { userId: foundUser.id || foundUser._id }, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 onOpenChat(chat);
@@ -32,7 +31,11 @@ export default function CreateContactSection({ onBack, onOpenChat }) {
             }
         } catch (err) {
             console.error(err);
-            setError("Failed to find user.");
+            if (err.response?.status === 404) {
+                setError("User not found with this number.");
+            } else {
+                setError("Failed to find user.");
+            }
         } finally {
             setLoading(false);
         }

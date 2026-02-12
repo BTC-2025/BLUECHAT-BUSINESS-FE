@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../api";
 import { useAuth } from "../context/AuthContext";
@@ -27,23 +27,16 @@ export default function NumberSearchSection({ onBack, onOpenChat }) {
         setError(null);
 
         try {
-            const { data: users } = await axios.get(`${API_BASE}/users/search?query=${phoneNumber}`, {
+            // ✅ Use specific phone search endpoint
+            const { data: foundUser } = await axios.get(`${API_BASE}/users/search/${phoneNumber}`, {
                 headers: { Authorization: `Bearer ${user.token}` }
             });
 
-            const foundUser = users.find(u => u.phone === phoneNumber || u.username === phoneNumber);
-
             if (foundUser) {
-                const { data: chat } = await axios.post(`${API_BASE}/chats`, { userId: foundUser._id }, {
+                const { data: chat } = await axios.post(`${API_BASE}/chats/open`, { targetPhone: foundUser.phone }, {
                     headers: { Authorization: `Bearer ${user.token}` }
                 });
                 onOpenChat(chat);
-                // We might want to switch back to chats view after opening, but usually onOpenChat handles the main view change.
-                // The sidebar state should probably reset or stay. 
-                // For now, let's assume the parent handles the sidebar state reset if needed, or we just leave it.
-                // Actually, looking at Sidebar.js, onOpenChat usually just sets the active chat in the main window.
-                // We probably want to go back to the chat list in the sidebar?
-                // Let's call onBack() to reset sidebar view to 'chats' if search is successful.
                 onBack();
             } else {
                 setError("User not found with this number.");
@@ -51,7 +44,11 @@ export default function NumberSearchSection({ onBack, onOpenChat }) {
 
         } catch (err) {
             console.error(err);
-            setError("Failed to find user.");
+            if (err.response?.status === 404) {
+                setError("User not found with this number.");
+            } else {
+                setError("Failed to find user.");
+            }
         } finally {
             setLoading(false);
         }
