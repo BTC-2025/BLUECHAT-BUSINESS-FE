@@ -174,7 +174,7 @@ export default function StatusPage({ onBack }) {
                 {/* Header */}
                 <div className="p-6 border-b border-slate-200 flex items-center justify-between sticky top-0 bg-white/50 backdrop-blur-xl z-20">
                     <div>
-                        <h2 className="text-slate-800 font-black text-2xl tracking-tight">Stories</h2>
+                        <h2 className="text-slate-800 font-black text-2xl tracking-tight">Flash</h2>
                         <p className="text-slate-500 text-xs font-medium mt-0.5">Share your moments</p>
                     </div>
                 </div>
@@ -182,7 +182,7 @@ export default function StatusPage({ onBack }) {
                 <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4 custom-scrollbar">
                     {/* MY STATUS SECTION */}
                     <div>
-                        <div className="px-2 py-2 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] mb-1">My Story</div>
+                        <div className="px-2 py-2 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em] mb-1">My Flash</div>
                         <div className="flex items-center gap-4 p-4 rounded-3xl transition-all bg-gradient-to-br from-white to-slate-50 hover:shadow-md border border-slate-200/60 group cursor-pointer relative overflow-hidden">
                             <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
 
@@ -204,7 +204,7 @@ export default function StatusPage({ onBack }) {
                                         fileInputRef.current?.click();
                                     }
                                 }}>
-                                    <div className="text-slate-800 font-bold text-base group-hover:text-primary transition-colors">My Status</div>
+                                    <div className="text-slate-800 font-bold text-base group-hover:text-primary transition-colors">My Flash</div>
                                     <div className="text-slate-500 text-xs font-medium mt-0.5">{myGroup ? `${myGroup.statuses.length} updates` : 'Touch to add update'}</div>
                                 </div>
                                 <button onClick={() => fileInputRef.current?.click()} className="p-3 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all">
@@ -405,7 +405,7 @@ export default function StatusPage({ onBack }) {
                             <div className="w-32 h-32 bg-gradient-to-tr from-white to-white/80 rounded-[2rem] flex items-center justify-center backdrop-blur-lg border border-slate-200 mb-10 shadow-xl transform hover:scale-105 transition-transform duration-500 hover:rotate-3">
                                 <svg className="w-16 h-16 text-primary drop-shadow-md" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                             </div>
-                            <h3 className="text-slate-800 text-5xl font-black tracking-tight mb-4 drop-shadow-sm">Stories</h3>
+                            <h3 className="text-slate-800 text-5xl font-black tracking-tight mb-4 drop-shadow-sm">Flash</h3>
                             <p className="text-slate-500 text-lg leading-relaxed mb-12 font-medium">
                                 Share the moments that matter with the people you care about.
                             </p>

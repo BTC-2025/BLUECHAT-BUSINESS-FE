@@ -816,13 +816,13 @@ export default function Sidebar({ onOpenChat, activeChatId, onViewStatus, onView
               <div className="relative z-50" ref={menuRef}>
                 <button
                   onClick={() => setShowMenu(!showMenu)}
-                  className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 transition-colors text-slate-600"
+                  className="p-3 rounded-xl text-slate-400 hover:bg-slate-100 hover:text-slate-900 transition-all relative group"
+                  title="More Options"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" /></svg>
                 </button>
-
                 {showMenu && (
-                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-100 shadow-xl rounded-2xl overflow-hidden py-1 animate-slide-up origin-top-right">
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white border border-slate-100 shadow-xl rounded-2xl overflow-hidden py-1 animate-slide-up origin-top-right z-[100]">
                     <button onClick={() => { setOpenCreate(true); setShowMenu(false); }} className="w-full text-left px-4 py-3 hover:bg-slate-50 text-sm font-medium flex items-center gap-3 text-slate-700 transition-colors">
                       <svg className="w-5 h-5 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
                       New Group

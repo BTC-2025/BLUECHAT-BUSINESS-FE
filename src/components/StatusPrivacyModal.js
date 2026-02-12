@@ -45,7 +45,7 @@ export default function StatusPrivacyModal({ isOpen, onClose, onConfirm }) {
             <div className="w-full max-w-md bg-[#0f172a] border border-white/10 rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
                 <div className="p-6 border-b border-white/5 flex items-center justify-between">
                     <div>
-                        <h2 className="text-xl font-bold text-white">Status Privacy</h2>
+                        <h2 className="text-xl font-bold text-white">Flash Privacy</h2>
                         <p className="text-white/40 text-[10px] uppercase tracking-widest font-black mt-1">Who can see your update?</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-full text-white/40 transition-colors">
